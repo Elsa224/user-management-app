@@ -148,8 +148,8 @@ user-management-app/
 3. **Environment configuration**
 
     ```bash
-    # Create .env.local file
-    echo "NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api" > .env.local
+    # Create .env.development file
+    echo "NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api" > .env.development
     ```
 
 4. **Start the development server**
