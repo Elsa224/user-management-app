@@ -1,0 +1,49 @@
+# Log files
+*.log
+
+# macOS system files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env*
+!.env.example
+
+# PHP and testing related files
+.phpactor.json
+.phpunit.result.cache
+/.phpunit.cache
+
+# IDE/editor folders
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zed
+
+# Composer authentication file
+/auth.json
+
+# Node dependencies
+/node_modules
+
+# Laravel public build artifacts
+/public/build
+/public/hot
+/public/storage
+
+# Storage keys and pail directory
+/storage/*.key
+/storage/pail
+
+# Composer vendor directory
+/vendor
+
+# Homestead configuration files
+Homestead.json
+Homestead.yaml
+
+# Others
+.*ude
+*.md
+!README.md

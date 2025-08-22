@@ -1,0 +1,78 @@
+{
+    "common": {
+        "loading": "Chargement...",
+        "error": "Erreur",
+        "success": "Succès",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "delete": "Supprimer",
+        "edit": "Modifier",
+        "view": "Voir",
+        "search": "Rechercher",
+        "actions": "Actions",
+        "name": "Nom",
+        "email": "Email",
+        "role": "Rôle",
+        "status": "Statut",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "admin": "Administrateur",
+        "user": "Utilisateur",
+        "created": "Créé",
+        "updated": "Mis à jour"
+    },
+    "auth": {
+        "login": "Connexion",
+        "logout": "Déconnexion",
+        "email": "Adresse Email",
+        "password": "Mot de passe",
+        "signIn": "Se connecter",
+        "welcome": "Bon retour",
+        "loginSubtitle": "Entrez vos identifiants pour accéder à votre compte",
+        "invalidCredentials": "Email ou mot de passe invalide",
+        "loginSuccess": "Connexion réussie",
+        "logoutSuccess": "Déconnexion réussie"
+    },
+    "dashboard": {
+        "title": "Tableau de bord",
+        "subtitle": "Système de gestion des utilisateurs",
+        "totalUsers": "Total utilisateurs",
+        "activeUsers": "Utilisateurs actifs",
+        "adminUsers": "Administrateurs",
+        "recentUsers": "Utilisateurs récents"
+    },
+    "users": {
+        "title": "Utilisateurs",
+        "subtitle": "Gérer les utilisateurs du système et leurs permissions",
+        "addUser": "Ajouter un utilisateur",
+        "editUser": "Modifier l'utilisateur",
+        "deleteUser": "Supprimer l'utilisateur",
+        "userDetails": "Détails de l'utilisateur",
+        "searchPlaceholder": "Rechercher des utilisateurs...",
+        "noUsers": "Aucun utilisateur trouvé",
+        "userCreated": "Utilisateur créé avec succès",
+        "userUpdated": "Utilisateur mis à jour avec succès",
+        "userDeleted": "Utilisateur supprimé avec succès",
+        "confirmDelete": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
+        "deleteWarning": "Cette action ne peut pas être annulée.",
+        "changeStatus": "Changer le statut",
+        "activateUser": "Activer l'utilisateur",
+        "deactivateUser": "Désactiver l'utilisateur",
+        "statusChanged": "Statut de l'utilisateur modifié avec succès"
+    },
+    "forms": {
+        "required": "Ce champ est requis",
+        "invalidEmail": "Veuillez entrer une adresse email valide",
+        "passwordMinLength": "Le mot de passe doit contenir au moins 6 caractères",
+        "passwordConfirmation": "Les mots de passe ne correspondent pas",
+        "firstName": "Prénom",
+        "lastName": "Nom de famille",
+        "confirmPassword": "Confirmer le mot de passe"
+    },
+    "navigation": {
+        "dashboard": "Tableau de bord",
+        "users": "Utilisateurs",
+        "settings": "Paramètres",
+        "profile": "Profil"
+    }
+}
