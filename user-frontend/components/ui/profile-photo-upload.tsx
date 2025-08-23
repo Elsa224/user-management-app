@@ -32,7 +32,9 @@ export function ProfilePhotoUpload({
 
         // Validate file type
         if (!file.type.match(/^image\/(jpeg|webp|jpg|png|gif)$/)) {
-            toast.error("Please select a valid image file (JPG, WEB, PNG, or GIF)");
+            toast.error(
+                "Please select a valid image file (JPG, WEB, PNG, or GIF)"
+            );
             return;
         }
 

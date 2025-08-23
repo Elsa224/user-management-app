@@ -100,7 +100,7 @@
         "nameRequired": "Name is required",
         "invalidEmail": "Invalid email address",
         "passwordMin": "Password must be at least 6 characters",
-        "table" :{
+        "table": {
             "view": "View",
             "toggleColumns": "Show/Hide columns",
             "loading": "Loading users...",

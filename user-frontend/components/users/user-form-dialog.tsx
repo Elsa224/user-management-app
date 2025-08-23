@@ -18,6 +18,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { LoadingButton } from "@/components/ui/loading-button";
 import {
     Select,
     SelectContent,
@@ -26,12 +27,10 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { User, usersApi, authApi } from "@/lib/api";
+import { authApi, User, usersApi } from "@/lib/api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Loader2Icon } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { LoadingButton } from "@/components/ui/loading-button";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -81,7 +80,9 @@ export function UserFormDialog({
     const isCurrentUserAdmin = currentUser?.role === "admin";
 
     const form = useForm<UserFormData>({
-        resolver: zodResolver(mode === "create" ? createUserFormSchema : editUserFormSchema),
+        resolver: zodResolver(
+            mode === "create" ? createUserFormSchema : editUserFormSchema
+        ),
         defaultValues: {
             name: "",
             email: "",
@@ -105,8 +106,13 @@ export function UserFormDialog({
     });
 
     const updateUserMutation = useMutation({
-        mutationFn: ({ slug, data }: { slug: string; data: Partial<UserFormData> }) =>
-            usersApi.updateUser(slug, data),
+        mutationFn: ({
+            slug,
+            data,
+        }: {
+            slug: string;
+            data: Partial<UserFormData>;
+        }) => usersApi.updateUser(slug, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["users"] });
             toast.success(t("userUpdateSuccess"));
@@ -145,7 +151,11 @@ export function UserFormDialog({
         }
 
         // Only admin users can edit other users
-        if (mode === "edit" && !isCurrentUserAdmin && user?.slug !== currentUser?.slug) {
+        if (
+            mode === "edit" &&
+            !isCurrentUserAdmin &&
+            user?.slug !== currentUser?.slug
+        ) {
             toast.error(t("editOwnProfileOnly"));
             return;
         }
@@ -166,15 +176,19 @@ export function UserFormDialog({
         }
     };
 
-    const isLoading = createUserMutation.isPending || updateUserMutation.isPending;
-    
+    const isLoading =
+        createUserMutation.isPending || updateUserMutation.isPending;
+
     // Check if current user is editing their own profile (non-admin)
-    const isEditingOwnProfile = mode === "edit" && !isCurrentUserAdmin && user?.slug === currentUser?.slug;
+    const isEditingOwnProfile =
+        mode === "edit" &&
+        !isCurrentUserAdmin &&
+        user?.slug === currentUser?.slug;
     const canManageRoleAndStatus = isCurrentUserAdmin || mode === "create";
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[425px] max-w-[95vw] mx-4 max-h-[90vh] overflow-y-auto">
+            <DialogContent className="mx-4 max-h-[90vh] max-w-[95vw] overflow-y-auto sm:max-w-[425px]">
                 <DialogHeader>
                     <DialogTitle>
                         {mode === "create" ? t("addUser") : t("editUser")}
@@ -187,7 +201,10 @@ export function UserFormDialog({
                 </DialogHeader>
 
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                    <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className="space-y-4"
+                    >
                         {/* Basic Info Section */}
                         <div className="space-y-4">
                             <div className="grid grid-cols-1 gap-4">
@@ -196,9 +213,16 @@ export function UserFormDialog({
                                     name="name"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{commonT("name")}</FormLabel>
+                                            <FormLabel>
+                                                {commonT("name")}
+                                            </FormLabel>
                                             <FormControl>
-                                                <Input placeholder={t("namePlaceholder")} {...field} />
+                                                <Input
+                                                    placeholder={t(
+                                                        "namePlaceholder"
+                                                    )}
+                                                    {...field}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -210,11 +234,15 @@ export function UserFormDialog({
                                     name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>{commonT("email")}</FormLabel>
+                                            <FormLabel>
+                                                {commonT("email")}
+                                            </FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="email"
-                                                    placeholder={t("emailPlaceholder")}
+                                                    placeholder={t(
+                                                        "emailPlaceholder"
+                                                    )}
                                                     {...field}
                                                 />
                                             </FormControl>
@@ -231,8 +259,10 @@ export function UserFormDialog({
                                             <FormLabel className="text-sm">
                                                 {commonT("password")}
                                                 {mode === "edit" && (
-                                                    <span className="text-muted-foreground ml-1 font-normal text-xs block sm:inline sm:text-sm">
-                                                        {t("leaveEmptyToKeepCurrent")}
+                                                    <span className="text-muted-foreground ml-1 block text-xs font-normal sm:inline sm:text-sm">
+                                                        {t(
+                                                            "leaveEmptyToKeepCurrent"
+                                                        )}
                                                     </span>
                                                 )}
                                             </FormLabel>
@@ -241,8 +271,12 @@ export function UserFormDialog({
                                                     type="password"
                                                     placeholder={
                                                         mode === "edit"
-                                                            ? t("newPasswordPlaceholder")
-                                                            : t("passwordPlaceholder")
+                                                            ? t(
+                                                                  "newPasswordPlaceholder"
+                                                              )
+                                                            : t(
+                                                                  "passwordPlaceholder"
+                                                              )
                                                     }
                                                     {...field}
                                                 />
@@ -256,51 +290,70 @@ export function UserFormDialog({
 
                         {/* Role and Status Section */}
                         {canManageRoleAndStatus && (
-                            <div className="space-y-4 pt-2 border-t">
+                            <div className="space-y-4 border-t pt-2">
+                                <FormField
+                                    control={form.control}
+                                    name="role"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                {commonT("role")}
+                                            </FormLabel>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                value={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue
+                                                            placeholder={t(
+                                                                "rolePlaceholder"
+                                                            )}
+                                                        />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="user">
+                                                        {commonT("user")}
+                                                    </SelectItem>
+                                                    <SelectItem value="admin">
+                                                        {commonT("admin")}
+                                                    </SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+
+                                <div className="sm:col-span-1">
                                     <FormField
                                         control={form.control}
-                                        name="role"
+                                        name="active"
                                         render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>{commonT("role")}</FormLabel>
-                                                <Select onValueChange={field.onChange} value={field.value}>
-                                                    <FormControl>
-                                                        <SelectTrigger>
-                                                            <SelectValue placeholder={t("rolePlaceholder")} />
-                                                        </SelectTrigger>
-                                                    </FormControl>
-                                                    <SelectContent>
-                                                        <SelectItem value="user">{commonT("user")}</SelectItem>
-                                                        <SelectItem value="admin">{commonT("admin")}</SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <FormMessage />
+                                            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 sm:p-4">
+                                                <div className="space-y-0.5">
+                                                    <FormLabel className="text-sm sm:text-base">
+                                                        {commonT("active")}
+                                                    </FormLabel>
+                                                    <div className="text-muted-foreground text-xs sm:text-sm">
+                                                        {t(
+                                                            "activeStatusDescription"
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <FormControl>
+                                                    <Switch
+                                                        checked={field.value}
+                                                        onCheckedChange={
+                                                            field.onChange
+                                                        }
+                                                    />
+                                                </FormControl>
                                             </FormItem>
                                         )}
                                     />
-
-                                    <div className="sm:col-span-1">
-                                        <FormField
-                                            control={form.control}
-                                            name="active"
-                                            render={({ field }) => (
-                                                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 sm:p-4">
-                                                    <div className="space-y-0.5">
-                                                        <FormLabel className="text-sm sm:text-base">{commonT("active")}</FormLabel>
-                                                        <div className="text-muted-foreground text-xs sm:text-sm">
-                                                            {t("activeStatusDescription")}
-                                                        </div>
-                                                    </div>
-                                                    <FormControl>
-                                                        <Switch
-                                                            checked={field.value}
-                                                            onCheckedChange={field.onChange}
-                                                        />
-                                                    </FormControl>
-                                                </FormItem>
-                                            )}
-                                        />
-                                    </div>
+                                </div>
                             </div>
                         )}
 
@@ -314,13 +367,19 @@ export function UserFormDialog({
                             >
                                 {commonT("cancel")}
                             </Button>
-                            <LoadingButton 
-                                type="submit" 
+                            <LoadingButton
+                                type="submit"
                                 loading={isLoading}
-                                loadingText={mode === "create" ? commonT("creating") : commonT("updating")}
+                                loadingText={
+                                    mode === "create"
+                                        ? commonT("creating")
+                                        : commonT("updating")
+                                }
                                 className="w-full sm:w-auto"
                             >
-                                {mode === "create" ? t("addUser") : t("editUser")}
+                                {mode === "create"
+                                    ? t("addUser")
+                                    : t("editUser")}
                             </LoadingButton>
                         </DialogFooter>
                     </form>

@@ -1,5 +1,5 @@
-import { Providers } from "@/lib/providers";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { Providers } from "@/lib/providers";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -37,7 +37,12 @@ export default async function RootLayout({
                         disableTransitionOnChange
                     >
                         <Providers>{children}</Providers>
-                        <Toaster richColors duration={3000} closeButton position="top-right" />
+                        <Toaster
+                            richColors
+                            duration={3000}
+                            closeButton
+                            position="top-right"
+                        />
                     </ThemeProvider>
                 </NextIntlClientProvider>
             </body>

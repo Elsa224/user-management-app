@@ -13,7 +13,7 @@ import { columns } from "@/components/users/columns";
 import { DataTable } from "@/components/users/data-table";
 import { UserFormDialog } from "@/components/users/user-form-dialog";
 import { UserTableSkeleton } from "@/components/users/user-table-skeleton";
-import { usersApi, authApi } from "@/lib/api";
+import { authApi, usersApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -44,7 +44,9 @@ export default function UsersPage() {
                 {/* Header */}
                 <div className="flex items-center justify-between space-y-2">
                     <div>
-                        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
+                        <h2 className="text-3xl font-bold tracking-tight">
+                            {t("title")}
+                        </h2>
                         <p className="text-muted-foreground">{t("subtitle")}</p>
                     </div>
                     {isCurrentUserAdmin && (

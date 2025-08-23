@@ -93,7 +93,7 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
             <div className="space-y-4 py-4">
                 {/* Mobile: Stack filters vertically */}
                 <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-                    <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:items-center md:space-x-2 md:space-y-0">
+                    <div className="flex flex-col space-y-2 md:flex-1 md:flex-row md:items-center md:space-y-0 md:space-x-2">
                         {/* Global Search */}
                         <div className="relative w-full md:max-w-sm">
                             <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -114,8 +114,7 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                         </div>
 
                         {/* Filter Row - Mobile: Stack, Desktop: Inline */}
-                        <div className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
-
+                        <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2">
                             {/* Role Filter */}
                             <Select
                                 value={
@@ -126,7 +125,9 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                 onValueChange={value =>
                                     table
                                         .getColumn("role")
-                                        ?.setFilterValue(value === "all" ? "" : value)
+                                        ?.setFilterValue(
+                                            value === "all" ? "" : value
+                                        )
                                 }
                             >
                                 <SelectTrigger className="w-full md:w-[180px]">
@@ -137,7 +138,9 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                     />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All roles</SelectItem>
+                                    <SelectItem value="all">
+                                        All roles
+                                    </SelectItem>
                                     <SelectItem value="admin">Admin</SelectItem>
                                     <SelectItem value="user">User</SelectItem>
                                 </SelectContent>
@@ -172,9 +175,15 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                     />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="all">All status</SelectItem>
-                                    <SelectItem value="active">Active</SelectItem>
-                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                    <SelectItem value="all">
+                                        All status
+                                    </SelectItem>
+                                    <SelectItem value="active">
+                                        Active
+                                    </SelectItem>
+                                    <SelectItem value="inactive">
+                                        Inactive
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
 
@@ -183,7 +192,7 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                 <Button
                                     variant="ghost"
                                     onClick={() => table.resetColumnFilters()}
-                                    className="h-8 px-2 lg:px-3 w-full md:w-auto"
+                                    className="h-8 w-full px-2 md:w-auto lg:px-3"
                                 >
                                     Reset
                                 </Button>
@@ -195,13 +204,19 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                     <div className="flex justify-end">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" className="w-full md:w-auto">
+                                <Button
+                                    variant="outline"
+                                    className="w-full md:w-auto"
+                                >
                                     <SlidersHorizontalIcon className="mr-2 h-4 w-4" />
                                     {t("table.view", { default: "View" })}
                                     <ChevronDownIcon className="ml-2 h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" className="w-[150px]">
+                            <DropdownMenuContent
+                                align="end"
+                                className="w-[150px]"
+                            >
                                 <DropdownMenuLabel>
                                     {t("table.toggleColumns", {
                                         default: "Toggle columns",
@@ -212,7 +227,8 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                     .getAllColumns()
                                     .filter(
                                         column =>
-                                            typeof column.accessorFn !== "undefined" &&
+                                            typeof column.accessorFn !==
+                                                "undefined" &&
                                             column.getCanHide()
                                     )
                                     .map(column => {
@@ -222,7 +238,9 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                                 className="capitalize"
                                                 checked={column.getIsVisible()}
                                                 onCheckedChange={value =>
-                                                    column.toggleVisibility(!!value)
+                                                    column.toggleVisibility(
+                                                        !!value
+                                                    )
                                                 }
                                             >
                                                 {column.id}
@@ -234,9 +252,9 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                     </div>
                 </div>
             </div>
-            
+
             {/* Desktop Table View */}
-            <div className="hidden md:block rounded-md border">
+            <div className="hidden rounded-md border md:block">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map(headerGroup => (
@@ -305,9 +323,9 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
             </div>
 
             {/* Mobile Card View */}
-            <div className="md:hidden space-y-4">
+            <div className="space-y-4 md:hidden">
                 {loading ? (
-                    <div className="flex items-center justify-center h-24">
+                    <div className="flex h-24 items-center justify-center">
                         <div className="border-primary h-6 w-6 animate-spin rounded-full border-b-2"></div>
                         <span className="ml-2">{t("loading")}</span>
                     </div>
@@ -315,22 +333,33 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                     table.getRowModel().rows.map(row => {
                         const user = row.original;
                         return (
-                            <div key={row.id} className="rounded-lg border bg-card p-4 space-y-3">
+                            <div
+                                key={row.id}
+                                className="bg-card space-y-3 rounded-lg border p-4"
+                            >
                                 {/* User Header */}
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-3">
                                         <Avatar className="h-10 w-10">
-                                            <AvatarImage 
-                                                src={user.profile_photo ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://127.0.0.1:8001'}/storage/${user.profile_photo}` : undefined} 
-                                                alt={user.name} 
+                                            <AvatarImage
+                                                src={
+                                                    user.profile_photo
+                                                        ? `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://127.0.0.1:8001"}/storage/${user.profile_photo}`
+                                                        : undefined
+                                                }
+                                                alt={user.name}
                                             />
-                                            <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-white text-sm font-semibold">
-                                                {user.name.charAt(0).toUpperCase()}
+                                            <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-sm font-semibold text-white">
+                                                {user.name
+                                                    .charAt(0)
+                                                    .toUpperCase()}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <h4 className="font-semibold">{user.name}</h4>
-                                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                            <h4 className="font-semibold">
+                                                {user.name}
+                                            </h4>
+                                            <div className="text-muted-foreground flex items-center space-x-2 text-sm">
                                                 <MailIcon className="h-3 w-3" />
                                                 <span>{user.email}</span>
                                             </div>
@@ -344,18 +373,33 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             {/* Actions from the original table actions */}
-                                            {row.getVisibleCells()
-                                                .find(cell => cell.column.id === 'actions')
-                                                ?.column.columnDef.cell && 
+                                            {row
+                                                .getVisibleCells()
+                                                .find(
+                                                    cell =>
+                                                        cell.column.id ===
+                                                        "actions"
+                                                )?.column.columnDef.cell &&
                                                 flexRender(
-                                                    row.getVisibleCells()
-                                                        .find(cell => cell.column.id === 'actions')
-                                                        ?.column.columnDef.cell!,
-                                                    row.getVisibleCells()
-                                                        .find(cell => cell.column.id === 'actions')
+                                                    row
+                                                        .getVisibleCells()
+                                                        .find(
+                                                            cell =>
+                                                                cell.column
+                                                                    .id ===
+                                                                "actions"
+                                                        )?.column.columnDef
+                                                        .cell!,
+                                                    row
+                                                        .getVisibleCells()
+                                                        .find(
+                                                            cell =>
+                                                                cell.column
+                                                                    .id ===
+                                                                "actions"
+                                                        )
                                                         ?.getContext()!
-                                                )
-                                            }
+                                                )}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>
@@ -363,21 +407,43 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                 {/* User Details */}
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">Role</span>
-                                        <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                                        <span className="text-muted-foreground text-sm">
+                                            Role
+                                        </span>
+                                        <Badge
+                                            variant={
+                                                user.role === "admin"
+                                                    ? "default"
+                                                    : "secondary"
+                                            }
+                                        >
                                             {user.role}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">Status</span>
-                                        <Badge variant={user.active ? 'default' : 'destructive'}>
-                                            {user.active ? 'Active' : 'Inactive'}
+                                        <span className="text-muted-foreground text-sm">
+                                            Status
+                                        </span>
+                                        <Badge
+                                            variant={
+                                                user.active
+                                                    ? "default"
+                                                    : "destructive"
+                                            }
+                                        >
+                                            {user.active
+                                                ? "Active"
+                                                : "Inactive"}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-muted-foreground">Created</span>
+                                        <span className="text-muted-foreground text-sm">
+                                            Created
+                                        </span>
                                         <span className="text-sm">
-                                            {new Date(user.created_at).toLocaleDateString()}
+                                            {new Date(
+                                                user.created_at
+                                            ).toLocaleDateString()}
                                         </span>
                                     </div>
                                 </div>
@@ -385,8 +451,8 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                         );
                     })
                 ) : (
-                    <div className="text-center py-8">
-                        <UserIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                    <div className="py-8 text-center">
+                        <UserIcon className="text-muted-foreground mx-auto mb-2 h-12 w-12" />
                         <p className="text-muted-foreground">{t("noUsers")}</p>
                     </div>
                 )}
@@ -394,7 +460,9 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
             {/* Enhanced Responsive Pagination */}
             <div className="flex flex-col space-y-4 py-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                 <div className="flex items-center justify-center space-x-2 md:justify-start">
-                    <p className="text-sm font-medium hidden md:block">{tTable("rowsPerPage")}</p>
+                    <p className="hidden text-sm font-medium md:block">
+                        {tTable("rowsPerPage")}
+                    </p>
                     <Select
                         value={`${table.getState().pagination.pageSize}`}
                         onValueChange={value => {
@@ -420,13 +488,19 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                         </SelectContent>
                     </Select>
                 </div>
-                
+
                 <div className="flex items-center justify-center space-x-4 md:space-x-6 lg:space-x-8">
                     <div className="flex items-center justify-center text-sm font-medium">
-                        <span className="hidden md:inline">{tTable("page")}&nbsp;</span>
+                        <span className="hidden md:inline">
+                            {tTable("page")}&nbsp;
+                        </span>
                         <span>{table.getState().pagination.pageIndex + 1}</span>
-                        <span className="hidden md:inline">&nbsp;{tTable("of")}&nbsp;{table.getPageCount()}</span>
-                        <span className="md:hidden">&nbsp;/&nbsp;{table.getPageCount()}</span>
+                        <span className="hidden md:inline">
+                            &nbsp;{tTable("of")}&nbsp;{table.getPageCount()}
+                        </span>
+                        <span className="md:hidden">
+                            &nbsp;/&nbsp;{table.getPageCount()}
+                        </span>
                     </div>
                     <div className="flex items-center space-x-1 md:space-x-2">
                         <Button

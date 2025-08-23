@@ -228,9 +228,13 @@ export const dashboardApi = {
         return response.data;
     },
 
-    getUserActivityChart: async (days?: number): Promise<ApiResponse<any[]>> => {
+    getUserActivityChart: async (
+        days?: number
+    ): Promise<ApiResponse<any[]>> => {
         const params = days ? { days } : {};
-        const response = await api.get("/dashboard/user-activity-chart", { params });
+        const response = await api.get("/dashboard/user-activity-chart", {
+            params,
+        });
         return response.data;
     },
 };
@@ -266,7 +270,9 @@ export const activityLogsApi = {
 
 // Profile API functions
 export const profileApi = {
-    getProfile: async (): Promise<ApiResponse<User & { profile_photo_url?: string }>> => {
+    getProfile: async (): Promise<
+        ApiResponse<User & { profile_photo_url?: string }>
+    > => {
         const response = await api.get("/profile");
         return response.data;
     },
@@ -280,10 +286,14 @@ export const profileApi = {
         return response.data;
     },
 
-    uploadProfilePhoto: async (photo: File): Promise<ApiResponse<{ profile_photo: string; profile_photo_url: string }>> => {
+    uploadProfilePhoto: async (
+        photo: File
+    ): Promise<
+        ApiResponse<{ profile_photo: string; profile_photo_url: string }>
+    > => {
         const formData = new FormData();
         formData.append("photo", photo);
-        
+
         const response = await api.post("/profile/upload-photo", formData, {
             headers: {
                 "Content-Type": "multipart/form-data",

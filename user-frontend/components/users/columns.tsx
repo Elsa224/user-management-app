@@ -123,11 +123,15 @@ export const columns: ColumnDef<User>[] = [
             return (
                 <div className="flex items-center space-x-3">
                     <Avatar className="h-8 w-8">
-                        <AvatarImage 
-                            src={user.profile_photo ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://127.0.0.1:8001'}/storage/${user.profile_photo}` : undefined} 
-                            alt={user.name} 
+                        <AvatarImage
+                            src={
+                                user.profile_photo
+                                    ? `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://127.0.0.1:8001"}/storage/${user.profile_photo}`
+                                    : undefined
+                            }
+                            alt={user.name}
                         />
-                        <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-semibold">
+                        <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-xs font-semibold text-white">
                             {user.name.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>

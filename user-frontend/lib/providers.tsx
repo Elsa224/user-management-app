@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } finally {
             tokenManager.remove();
             setUser(null);
-            
+
             // Add a 2-second delay before redirecting to login
             setTimeout(() => {
                 window.location.href = "/login";

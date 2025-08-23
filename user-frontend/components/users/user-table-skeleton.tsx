@@ -9,11 +9,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { ChevronDownIcon, SearchIcon, SlidersHorizontalIcon } from "lucide-react";
+import { SearchIcon } from "lucide-react";
 
 export function UserTableSkeleton() {
     return (
@@ -23,7 +19,7 @@ export function UserTableSkeleton() {
                 <div className="flex flex-1 items-center space-x-2">
                     {/* Global Search Skeleton */}
                     <div className="relative max-w-sm">
-                        <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                        <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                         <Skeleton className="h-10 w-80 pl-10" />
                     </div>
 

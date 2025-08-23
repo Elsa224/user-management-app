@@ -3,8 +3,8 @@
 import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronDownIcon, GlobeIcon } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
-import * as React from "react";
 import { useLocale } from "next-intl";
+import * as React from "react";
 
 const languages = [
     { code: "en", name: "English", flag: "🇺🇸" },
@@ -18,10 +18,10 @@ export function LanguageSwitch() {
     const handleLanguageChange = (newLocale: string) => {
         // Store preference in localStorage
         localStorage.setItem("preferred-language", newLocale);
-        
+
         // Set cookie for server-side locale detection
         document.cookie = `locale=${newLocale}; path=/; max-age=31536000`; // 1 year
-        
+
         // Reload page to apply new locale
         window.location.reload();
     };

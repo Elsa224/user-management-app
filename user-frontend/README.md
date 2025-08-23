@@ -28,7 +28,8 @@ A modern user management application frontend built with Next.js 15, TypeScript,
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ 
+
+- Node.js 18+
 - pnpm
 - Running Laravel backend ([see instructions here](../user-backend/README.md))
 
@@ -80,12 +81,14 @@ user-frontend/
 ## Key Features
 
 ### Authentication
+
 - JWT token-based authentication
 - Automatic token refresh
 - Protected routes with middleware
 - Role-based access control (Admin/User)
 
 ### User Management
+
 - View paginated user list with search
 - Add new users (Admin only)
 - Edit user details (role-based permissions)
@@ -93,12 +96,14 @@ user-frontend/
 - Toggle user status (Admin only)
 
 ### Internationalization
+
 - English and French language support
 - Language switcher component
 - Localized routing (e.g., `/login` → `/connexion`)
 - Comprehensive translation coverage
 
 ### UI/UX
+
 - Responsive design for all screen sizes
 - Dark/Light theme support
 - Loading states and skeletons
@@ -132,7 +137,7 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
 
 ### Internationalization
 
-- Default locale: French (fr) 
+- Default locale: French (fr)
 - Supported locales: English (en), French (fr)
 - Language preference stored in localStorage
 - Automatic locale detection based on user selection
@@ -149,12 +154,14 @@ NEXT_PUBLIC_API_URL=http://127.0.0.1:8000/api
 ## Dependencies
 
 ### Core Dependencies
+
 - next: 15.x
 - react: 18.x
 - typescript: 5.x
 - tailwindcss: 3.x
 
 ### Key Libraries
+
 - @tanstack/react-query: Data fetching and caching
 - react-hook-form: Form management
 - zod: Schema validation

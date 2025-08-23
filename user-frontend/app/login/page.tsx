@@ -1,9 +1,9 @@
 "use client";
 
-import { LoadingButton } from "@/components/ui/loading-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitch } from "@/components/ui/language-switch";
+import { LoadingButton } from "@/components/ui/loading-button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useAuth } from "@/lib/providers";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -48,7 +48,8 @@ export default function LoginPage() {
             toast.success(t("loginSuccess"));
             router.push("/dashboard");
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || t("invalidCredentials");
+            const errorMessage =
+                err.response?.data?.message || t("invalidCredentials");
             setError(errorMessage);
             toast.error(errorMessage);
         } finally {

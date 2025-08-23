@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 export default getRequestConfig(async () => {
     // Get locale from cookies, default to French for Côte d'Ivoire
     const cookieStore = await cookies();
-    const locale = cookieStore.get('locale')?.value || 'fr';
+    const locale = cookieStore.get("locale")?.value || "fr";
 
     return {
         locale,
