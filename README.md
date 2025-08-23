@@ -1,33 +1,45 @@
-# User Management System
+# User Management System 🚀
 
-A comprehensive full-stack user management application with JWT authentication, role-based access control, and modern web technologies.
+A comprehensive full-stack user management application built with **Next.js 15** and **Laravel 12**, featuring JWT authentication, role-based access control, and modern web technologies.
 
-## 🌟 Features
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
+![Laravel](https://img.shields.io/badge/Laravel-12-red?style=for-the-badge&logo=laravel)
+![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql)
 
-### Authentication & Security
+## ✨ Features
+
+### 🔐 Authentication & Security
 
 -   ✅ JWT token-based authentication
 -   ✅ Role-based access control (Admin/User)
 -   ✅ Protected routes and middleware
 -   ✅ Password management (change, reset)
 -   ✅ Secure cookie-based token storage
+-   ✅ Activity logging and audit trails
 
-### User Management
+### 👥 User Management
 
 -   ✅ CRUD operations for users
--   ✅ Search and pagination functionality
+-   ✅ Advanced search and filtering
+-   ✅ Pagination with customizable page sizes
 -   ✅ User status management (active/inactive)
--   ✅ Slug-based user identification
+-   ✅ Slug-based user identification for security
 -   ✅ Real-time data tables with sorting
 
-### UI/UX
+### 🎨 UI/UX & Bonus Features
 
 -   ✅ Modern dashboard design inspired by shadcn/ui
--   ✅ Responsive mobile-first design
--   ✅ TanStack DataTable with advanced features
+-   ✅ **Dark/Light theme toggle** with system preference detection
+-   ✅ **Responsive mobile-first design**
+-   ✅ **Loading states and skeleton screens**
+-   ✅ **Dynamic table filtering and sorting**
+-   ✅ Advanced TanStack DataTable with column visibility
 -   ✅ Nunito font with Amber-400 primary color
 -   ✅ Internationalization (English/French)
--   ✅ Loading states and error handling
+-   ✅ Toast notifications with Sonner
+-   ✅ Action logging system for user activity tracking
 
 ## 🛠️ Tech Stack
 
@@ -202,6 +214,13 @@ user-management-app/
 | POST   | `/api/reset-password`         | Send reset email       |
 | POST   | `/api/reset-password-confirm` | Confirm password reset |
 
+### Activity Logs (Admin Only)
+
+| Method | Endpoint                | Description                    |
+| ------ | ----------------------- | ------------------------------ |
+| GET    | `/api/activity-logs`    | List all activity logs         |
+| GET    | `/api/my-activity-logs` | List current user's activities |
+
 ## 🎨 Design System
 
 ### Colors
@@ -250,7 +269,6 @@ Language switching is available in the UI, and translations are stored in JSON f
 -   CSRF protection
 -   Automatic token refresh
 
-
 ## 🧪 Development
 
 ### Code Style
@@ -272,27 +290,77 @@ users {
   created_at: timestamp
   updated_at: timestamp
 }
+
+activity_logs {
+  id: bigint (primary key)
+  slug: string (unique, LOG_prefix)
+  user_id: bigint (foreign key)
+  action: string (e.g., 'created_user', 'user_login')
+  target_type: string (e.g., 'User')
+  target_slug: string
+  changes: json
+  ip_address: string
+  user_agent: string
+  created_at: timestamp
+  updated_at: timestamp
+}
 ```
 
 ## 🚀 Deployment
 
-### Frontend (Vercel)
+### 🎯 Production Deployment
 
-```bash
-# Build the application
-pnpm build
+#### Backend (Railway)
 
-# Deploy to Vercel
-vercel --prod
-```
+1. **Create Railway Project**
 
-### Backend (Railway)
+    ```bash
+    # Install Railway CLI
+    npm install -g @railway/cli
 
-```bash
-# Connect your repository to Railway
-# Set environment variables
-# Deploy automatically on push
-```
+    # Login and create project
+    railway login
+    railway init
+    ```
+
+2. **Set Environment Variables**
+
+    ```env
+    APP_ENV=production
+    APP_DEBUG=false
+    APP_URL=https://your-app-name.railway.app
+    DB_CONNECTION=mysql
+    # Railway provides DATABASE_URL automatically
+    JWT_SECRET=your-secure-jwt-secret
+    ```
+
+3. **Deploy**
+    ```bash
+    railway up
+    ```
+
+#### Frontend (Vercel)
+
+1. **Connect Repository**
+    - Import project from GitHub
+    - Set root directory to `user-frontend`
+2. **Environment Variables**
+
+    ```env
+    NEXT_PUBLIC_API_URL=https://your-backend.railway.app/api
+    ```
+
+3. **Deploy**
+    ```bash
+    pnpm build
+    vercel --prod
+    ```
+
+### 📊 Performance & Monitoring
+
+-   **Backend**: Railway provides built-in monitoring
+-   **Frontend**: Vercel Analytics and Core Web Vitals
+-   **Database**: MySQL with Railway's automatic backups
 
 ## 📄 License
 
