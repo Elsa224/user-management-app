@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { CheckIcon, ChevronDownIcon, GlobeIcon } from "@radix-ui/react-icons";
 import * as Select from "@radix-ui/react-select";
 import * as React from "react";
+import { useLocale } from "next-intl";
 
 const languages = [
     { code: "en", name: "English", flag: "🇺🇸" },
@@ -11,23 +12,32 @@ const languages = [
 ];
 
 export function LanguageSwitch() {
-    const [currentLocale, setCurrentLocale] = React.useState("en");
+    const currentLocale = useLocale();
     const currentLanguage = languages.find(lang => lang.code === currentLocale);
 
     const handleLanguageChange = (newLocale: string) => {
-        setCurrentLocale(newLocale);
         // Store preference in localStorage
         localStorage.setItem("preferred-language", newLocale);
-        // For now, just reload the page - in a real app you'd update the locale context
+        
+        // Set cookie for server-side locale detection
+        document.cookie = `locale=${newLocale}; path=/; max-age=31536000`; // 1 year
+        
+        // Reload page to apply new locale
         window.location.reload();
     };
 
     React.useEffect(() => {
+        // Set the current locale as cookie and localStorage if not already set
         const savedLocale = localStorage.getItem("preferred-language");
-        if (savedLocale && languages.find(lang => lang.code === savedLocale)) {
-            setCurrentLocale(savedLocale);
+        if (!savedLocale) {
+            localStorage.setItem("preferred-language", currentLocale);
+            document.cookie = `locale=${currentLocale}; path=/; max-age=31536000`;
+        } else if (savedLocale !== currentLocale) {
+            // Update cookie to match localStorage preference
+            document.cookie = `locale=${savedLocale}; path=/; max-age=31536000`;
+            window.location.reload();
         }
-    }, []);
+    }, [currentLocale]);
 
     return (
         <Select.Root value={currentLocale} onValueChange={handleLanguageChange}>
