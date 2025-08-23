@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\ActivityLog;
 use App\Traits\ApiResponse;
 
 class AuthController extends Controller
@@ -39,6 +40,16 @@ class AuthController extends Controller
             return $this->unauthorizedResponse('Account is inactive');
         }
 
+        // Log successful login
+        ActivityLog::createLog(
+            $user->id,
+            'user_login',
+            null,
+            null,
+            ['email' => $user->email],
+            $request
+        );
+
         return $this->respondWithToken($token);
     }
 
@@ -49,6 +60,20 @@ class AuthController extends Controller
 
     public function logout()
     {
+        $user = auth('api')->user();
+        
+        // Log logout activity
+        if ($user) {
+            ActivityLog::createLog(
+                $user->id,
+                'user_logout',
+                null,
+                null,
+                ['email' => $user->email],
+                request()
+            );
+        }
+        
         auth('api')->logout();
 
         return $this->successResponse(null, 'Successfully logged out');
