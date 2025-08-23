@@ -30,7 +30,7 @@ A modern user management application frontend built with Next.js 15, TypeScript,
 ### Prerequisites
 - Node.js 18+ 
 - pnpm
-- Running Laravel backend (see ../user-backend/README.md)
+- Running Laravel backend ([see instructions here](../user-backend/README.md))
 
 ### Installation
 
@@ -42,7 +42,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3005](http://localhost:3005) with your browser to see the result.
 
 ### Available Scripts
 
