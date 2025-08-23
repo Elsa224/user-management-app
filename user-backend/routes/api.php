@@ -4,6 +4,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ActivityLogController;
+use App\Http\Controllers\DashboardController;
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
+
+/**
+ * --------------------------------------------------------------------------
+ * Public Routes
+ * --------------------------------------------------------------------------
+ */
+
+// Health check route
+Route::get('/health', function () {
+    return response()->json(['status' => 'OK']);
+});
 
 // Return the authenticated user (requires Sanctum authentication)
 Route::get('/user', function (Request $request) {
@@ -11,35 +35,92 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 // Authentication routes
-// Login route: issues a JWT token on successful authentication
 Route::post('/login', [AuthController::class, 'login']);
-
-// Routes that require JWT authentication
-Route::middleware('auth:api')->group(function () {
-    // Logout route: invalidates the current JWT token
-    Route::post('/logout', [AuthController::class, 'logout']);
-    
-    // Refresh route: issues a new JWT token
-    Route::post('/refresh', [AuthController::class, 'refresh']);
-    
-    // Me route: returns the currently authenticated user's details
-    Route::get('/me', [AuthController::class, 'me']);
-    
-    // Password management routes
-    Route::post('/change-password', [AuthController::class, 'changePassword']);
-});
-
-// Password reset routes (public)
+Route::post('/register', [AuthController::class, 'register']); // Registration (if enabled)
 Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/reset-password-confirm', [AuthController::class, 'resetPasswordConfirm']);
 
-// User management routes (CRUD operations for users, protected by JWT)
+/**
+ * --------------------------------------------------------------------------
+ * Protected Routes (JWT Auth)
+ * --------------------------------------------------------------------------
+ */
 Route::middleware('auth:api')->group(function () {
-    // Uses 'slug' as the route parameter for user identification
+
+    /**
+     * ----------------------------------------------------------------------
+     * Auth & Session Management
+     * ----------------------------------------------------------------------
+     */
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refresh']);
+    Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
+
+    /**
+     * ----------------------------------------------------------------------
+     * User Management
+     * ----------------------------------------------------------------------
+     */
+    // Change user status (activate/deactivate)
+    Route::patch('/users/{slug}/status', [UserController::class, 'changeStatus']);
+    // Bulk actions (example: bulk delete, bulk activate)
+    Route::post('/users/bulk-action', [UserController::class, 'bulkAction']);
+    
+    // CRUD for users (uses 'slug' as identifier)
     Route::apiResource('users', UserController::class)->parameters([
         'users' => 'slug'
     ]);
-    
-    // Additional user management routes
-    Route::patch('/users/{slug}/status', [UserController::class, 'changeStatus']);
+
+    /**
+     * ----------------------------------------------------------------------
+     * Profile Management
+     * ----------------------------------------------------------------------
+     */
+    Route::get('/profile', [UserController::class, 'profile']);
+    Route::put('/profile', [UserController::class, 'updateProfile']);
+    Route::post('/profile/upload-photo', [UserController::class, 'uploadProfilePhoto']);
+    Route::delete('/profile/delete-photo', [UserController::class, 'deleteProfilePhoto']);
+    Route::post('/profile/change-password', [UserController::class, 'changePassword']);
+
+    /**
+     * ----------------------------------------------------------------------
+     * Activity Logs
+     * ----------------------------------------------------------------------
+     */
+    Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+    Route::get('/activity-logs/{id}', [ActivityLogController::class, 'show']);
+    Route::get('/my-activity-logs', [ActivityLogController::class, 'myLogs']);
+    Route::delete('/activity-logs/{id}', [ActivityLogController::class, 'destroy']);
+    Route::delete('/activity-logs', [ActivityLogController::class, 'bulkDestroy']); // Bulk delete
+
+    /**
+     * ----------------------------------------------------------------------
+     * Dashboard & Analytics
+     * ----------------------------------------------------------------------
+     */
+    Route::get('/dashboard/stats', [DashboardController::class, 'stats']);
+    Route::get('/dashboard/recent-users', [DashboardController::class, 'recentUsers']);
+    Route::get('/dashboard/user-activity-chart', [DashboardController::class, 'userActivityChart']);
+    Route::get('/dashboard/active-sessions', [DashboardController::class, 'activeSessions']); // Example: active sessions
+    Route::get('/dashboard/admin-users', [DashboardController::class, 'adminUsers']); // Example: admin users list
+
+    /**
+     * ----------------------------------------------------------------------
+     * Settings (if needed)
+     * ----------------------------------------------------------------------
+     */
+    // Route::get('/settings', [SettingsController::class, 'index']);
+    // Route::put('/settings', [SettingsController::class, 'update']);
+});
+
+/**
+ * --------------------------------------------------------------------------
+ * Fallback Route
+ * --------------------------------------------------------------------------
+ */
+Route::fallback(function () {
+    return response()->json([
+        'message' => 'API resource not found.'
+    ], 404);
 });
