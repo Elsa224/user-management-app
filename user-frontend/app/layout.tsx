@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { Nunito } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const nunito = Nunito({
@@ -29,6 +30,7 @@ export default async function RootLayout({
             <body className={`${nunito.variable} font-nunito antialiased`}>
                 <NextIntlClientProvider messages={messages}>
                     <Providers>{children}</Providers>
+                    <Toaster />
                 </NextIntlClientProvider>
             </body>
         </html>

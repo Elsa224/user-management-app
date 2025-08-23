@@ -10,13 +10,36 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User } from "@/lib/api";
+import { UserFormDialog } from "@/components/users/user-form-dialog";
+import { User, usersApi } from "@/lib/api";
 import { ColumnDef } from "@tanstack/react-table";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "sonner";
 
 function ActionsCell({ user }: { user: User }) {
     const t = useTranslations("common");
+    const [showEditDialog, setShowEditDialog] = useState(false);
+    const queryClient = useQueryClient();
+
+    const deleteUserMutation = useMutation({
+        mutationFn: (slug: string) => usersApi.deleteUser(slug),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["users"] });
+            toast.success("User deleted successfully");
+        },
+        onError: (error: any) => {
+            toast.error(error.response?.data?.message || "Failed to delete user");
+        },
+    });
+
+    const handleDelete = () => {
+        if (window.confirm("Are you sure you want to delete this user?")) {
+            deleteUserMutation.mutate(user.slug);
+        }
+    };
 
     return (
         <DropdownMenu>
@@ -34,12 +57,19 @@ function ActionsCell({ user }: { user: User }) {
                     Copy user ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>{t("view")} user</DropdownMenuItem>
-                <DropdownMenuItem>{t("edit")} user</DropdownMenuItem>
-                <DropdownMenuItem className="text-red-600">
+                <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
+                    {t("edit")} user
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDelete} className="text-red-600">
                     {t("delete")} user
                 </DropdownMenuItem>
             </DropdownMenuContent>
+            <UserFormDialog
+                open={showEditDialog}
+                onOpenChange={setShowEditDialog}
+                mode="edit"
+                user={user}
+            />
         </DropdownMenu>
     );
 }

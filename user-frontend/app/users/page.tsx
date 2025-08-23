@@ -11,13 +11,16 @@ import {
 } from "@/components/ui/card";
 import { columns } from "@/components/users/columns";
 import { DataTable } from "@/components/users/data-table";
+import { UserFormDialog } from "@/components/users/user-form-dialog";
 import { usersApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 export default function UsersPage() {
     const t = useTranslations("users");
+    const [showAddDialog, setShowAddDialog] = useState(false);
 
     const { data: usersResponse, isLoading } = useQuery({
         queryKey: ["users", "all"],
@@ -37,7 +40,7 @@ export default function UsersPage() {
                         </h1>
                         <p className="text-muted-foreground">{t("subtitle")}</p>
                     </div>
-                    <Button>
+                    <Button onClick={() => setShowAddDialog(true)}>
                         <PlusIcon className="mr-2 h-4 w-4" />
                         {t("addUser")}
                     </Button>
@@ -60,6 +63,13 @@ export default function UsersPage() {
                         />
                     </CardContent>
                 </Card>
+
+                {/* Add User Dialog */}
+                <UserFormDialog
+                    open={showAddDialog}
+                    onOpenChange={setShowAddDialog}
+                    mode="create"
+                />
             </div>
         </DashboardLayout>
     );
