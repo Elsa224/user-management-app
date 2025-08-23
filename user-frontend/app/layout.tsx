@@ -1,4 +1,5 @@
 import { Providers } from "@/lib/providers";
+import { ThemeProvider } from "@/components/ui/theme-provider";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -26,11 +27,18 @@ export default async function RootLayout({
     const messages = await getMessages();
 
     return (
-        <html lang={locale}>
+        <html lang={locale} suppressHydrationWarning>
             <body className={`${nunito.variable} font-nunito antialiased`}>
                 <NextIntlClientProvider messages={messages}>
-                    <Providers>{children}</Providers>
-                    <Toaster />
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="system"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <Providers>{children}</Providers>
+                        <Toaster richColors duration={3000} closeButton position="top-right" />
+                    </ThemeProvider>
                 </NextIntlClientProvider>
             </body>
         </html>

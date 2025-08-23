@@ -67,6 +67,7 @@ export interface User {
     email: string;
     role: "admin" | "user";
     active: boolean;
+    profile_photo?: string;
     created_at: string;
     updated_at: string;
 }
@@ -95,6 +96,32 @@ export interface PaginatedResponse<T> {
     last_page: number;
     per_page: number;
     total: number;
+}
+
+export interface DashboardStats {
+    total_users: number;
+    active_users: number;
+    inactive_users: number;
+    admin_users: number;
+    regular_users: number;
+    recent_users: number;
+    recent_activities: number;
+    growth_rate: number;
+}
+
+export interface ActivityLog {
+    id: number;
+    slug: string;
+    user_id: number;
+    action: string;
+    target_type: string | null;
+    target_slug: string | null;
+    changes: Record<string, any> | null;
+    ip_address: string | null;
+    user_agent: string | null;
+    created_at: string;
+    updated_at: string;
+    user: User;
 }
 
 // Auth API functions
@@ -184,6 +211,102 @@ export const usersApi = {
         active: boolean
     ): Promise<ApiResponse<User>> => {
         const response = await api.patch(`/users/${slug}/status`, { active });
+        return response.data;
+    },
+};
+
+// Dashboard API functions
+export const dashboardApi = {
+    getStats: async (): Promise<ApiResponse<DashboardStats>> => {
+        const response = await api.get("/dashboard/stats");
+        return response.data;
+    },
+
+    getRecentUsers: async (limit?: number): Promise<ApiResponse<User[]>> => {
+        const params = limit ? { limit } : {};
+        const response = await api.get("/dashboard/recent-users", { params });
+        return response.data;
+    },
+
+    getUserActivityChart: async (days?: number): Promise<ApiResponse<any[]>> => {
+        const params = days ? { days } : {};
+        const response = await api.get("/dashboard/user-activity-chart", { params });
+        return response.data;
+    },
+};
+
+// Activity Logs API functions
+export const activityLogsApi = {
+    getLogs: async (params?: {
+        user_id?: number;
+        action?: string;
+        from_date?: string;
+        to_date?: string;
+        per_page?: number;
+        page?: number;
+    }): Promise<ApiResponse<PaginatedResponse<ActivityLog>>> => {
+        const response = await api.get("/activity-logs", { params });
+        return response.data;
+    },
+
+    getMyLogs: async (params?: {
+        action?: string;
+        per_page?: number;
+        page?: number;
+    }): Promise<ApiResponse<PaginatedResponse<ActivityLog>>> => {
+        const response = await api.get("/my-activity-logs", { params });
+        return response.data;
+    },
+
+    deleteLog: async (slug: string): Promise<ApiResponse> => {
+        const response = await api.delete(`/activity-logs/${slug}`);
+        return response.data;
+    },
+};
+
+// Profile API functions
+export const profileApi = {
+    getProfile: async (): Promise<ApiResponse<User & { profile_photo_url?: string }>> => {
+        const response = await api.get("/profile");
+        return response.data;
+    },
+
+    updateProfile: async (userData: {
+        name?: string;
+        email?: string;
+        role?: "admin" | "user";
+    }): Promise<ApiResponse<User>> => {
+        const response = await api.put("/profile", userData);
+        return response.data;
+    },
+
+    uploadProfilePhoto: async (photo: File): Promise<ApiResponse<{ profile_photo: string; profile_photo_url: string }>> => {
+        const formData = new FormData();
+        formData.append("photo", photo);
+        
+        const response = await api.post("/profile/upload-photo", formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    },
+
+    deleteProfilePhoto: async (): Promise<ApiResponse> => {
+        const response = await api.delete("/profile/delete-photo");
+        return response.data;
+    },
+
+    changePassword: async (
+        currentPassword: string,
+        newPassword: string,
+        newPasswordConfirmation: string
+    ): Promise<ApiResponse> => {
+        const response = await api.post("/profile/change-password", {
+            current_password: currentPassword,
+            password: newPassword,
+            password_confirmation: newPasswordConfirmation,
+        });
         return response.data;
     },
 };

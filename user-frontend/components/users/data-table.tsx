@@ -15,8 +15,25 @@ import {
 import { useTranslations } from "next-intl";
 import * as React from "react";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuCheckboxItem,
+    DropdownMenuContent,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import {
     Table,
     TableBody,
@@ -26,7 +43,14 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { User } from "@/lib/api";
-import { SearchIcon } from "lucide-react";
+import {
+    ChevronDownIcon,
+    MailIcon,
+    MoreHorizontalIcon,
+    SearchIcon,
+    SlidersHorizontalIcon,
+    UserIcon,
+} from "lucide-react";
 
 interface DataTableProps {
     columns: ColumnDef<User>[];
@@ -42,6 +66,7 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const t = useTranslations("users");
+    const tTable = useTranslations("table");
 
     const table = useReactTable({
         data,
@@ -64,26 +89,154 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
 
     return (
         <div className="w-full">
-            <div className="flex items-center py-4">
-                <div className="relative max-w-sm flex-1">
-                    <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                    <Input
-                        placeholder={t("searchPlaceholder")}
-                        value={
-                            (table
-                                .getColumn("email")
-                                ?.getFilterValue() as string) ?? ""
-                        }
-                        onChange={event =>
-                            table
-                                .getColumn("email")
-                                ?.setFilterValue(event.target.value)
-                        }
-                        className="pl-10"
-                    />
+            {/* Enhanced Table Toolbar */}
+            <div className="space-y-4 py-4">
+                {/* Mobile: Stack filters vertically */}
+                <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+                    <div className="flex flex-col space-y-2 md:flex-row md:flex-1 md:items-center md:space-x-2 md:space-y-0">
+                        {/* Global Search */}
+                        <div className="relative w-full md:max-w-sm">
+                            <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                            <Input
+                                placeholder={t("searchPlaceholder")}
+                                value={
+                                    (table
+                                        .getColumn("name")
+                                        ?.getFilterValue() as string) ?? ""
+                                }
+                                onChange={event =>
+                                    table
+                                        .getColumn("name")
+                                        ?.setFilterValue(event.target.value)
+                                }
+                                className="pl-10"
+                            />
+                        </div>
+
+                        {/* Filter Row - Mobile: Stack, Desktop: Inline */}
+                        <div className="flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
+
+                            {/* Role Filter */}
+                            <Select
+                                value={
+                                    (table
+                                        .getColumn("role")
+                                        ?.getFilterValue() as string) ?? ""
+                                }
+                                onValueChange={value =>
+                                    table
+                                        .getColumn("role")
+                                        ?.setFilterValue(value === "all" ? "" : value)
+                                }
+                            >
+                                <SelectTrigger className="w-full md:w-[180px]">
+                                    <SelectValue
+                                        placeholder={t("filterByRole", {
+                                            default: "Filter by role",
+                                        })}
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All roles</SelectItem>
+                                    <SelectItem value="admin">Admin</SelectItem>
+                                    <SelectItem value="user">User</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            {/* Status Filter */}
+                            <Select
+                                value={
+                                    (table
+                                        .getColumn("active")
+                                        ?.getFilterValue() as string) ?? ""
+                                }
+                                onValueChange={value => {
+                                    const filterValue =
+                                        value === "all"
+                                            ? undefined
+                                            : value === "active"
+                                              ? true
+                                              : value === "inactive"
+                                                ? false
+                                                : undefined;
+                                    table
+                                        .getColumn("active")
+                                        ?.setFilterValue(filterValue);
+                                }}
+                            >
+                                <SelectTrigger className="w-full md:w-[180px]">
+                                    <SelectValue
+                                        placeholder={t("filterByStatus", {
+                                            default: "Filter by status",
+                                        })}
+                                    />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All status</SelectItem>
+                                    <SelectItem value="active">Active</SelectItem>
+                                    <SelectItem value="inactive">Inactive</SelectItem>
+                                </SelectContent>
+                            </Select>
+
+                            {/* Clear Filters */}
+                            {table.getState().columnFilters.length > 0 && (
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => table.resetColumnFilters()}
+                                    className="h-8 px-2 lg:px-3 w-full md:w-auto"
+                                >
+                                    Reset
+                                </Button>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Column Visibility Toggle */}
+                    <div className="flex justify-end">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" className="w-full md:w-auto">
+                                    <SlidersHorizontalIcon className="mr-2 h-4 w-4" />
+                                    {t("table.view", { default: "View" })}
+                                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-[150px]">
+                                <DropdownMenuLabel>
+                                    {t("table.toggleColumns", {
+                                        default: "Toggle columns",
+                                    })}
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                {table
+                                    .getAllColumns()
+                                    .filter(
+                                        column =>
+                                            typeof column.accessorFn !== "undefined" &&
+                                            column.getCanHide()
+                                    )
+                                    .map(column => {
+                                        return (
+                                            <DropdownMenuCheckboxItem
+                                                key={column.id}
+                                                className="capitalize"
+                                                checked={column.getIsVisible()}
+                                                onCheckedChange={value =>
+                                                    column.toggleVisibility(!!value)
+                                                }
+                                            >
+                                                {column.id}
+                                            </DropdownMenuCheckboxItem>
+                                        );
+                                    })}
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
                 </div>
             </div>
-            <div className="rounded-md border">
+            
+            {/* Desktop Table View */}
+            <div className="hidden md:block rounded-md border">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map(headerGroup => (
@@ -150,28 +303,167 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="text-muted-foreground flex-1 text-sm">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4">
+                {loading ? (
+                    <div className="flex items-center justify-center h-24">
+                        <div className="border-primary h-6 w-6 animate-spin rounded-full border-b-2"></div>
+                        <span className="ml-2">{t("loading")}</span>
+                    </div>
+                ) : table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map(row => {
+                        const user = row.original;
+                        return (
+                            <div key={row.id} className="rounded-lg border bg-card p-4 space-y-3">
+                                {/* User Header */}
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-3">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage 
+                                                src={user.profile_photo ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://127.0.0.1:8001'}/storage/${user.profile_photo}` : undefined} 
+                                                alt={user.name} 
+                                            />
+                                            <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-white text-sm font-semibold">
+                                                {user.name.charAt(0).toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <h4 className="font-semibold">{user.name}</h4>
+                                            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                                                <MailIcon className="h-3 w-3" />
+                                                <span>{user.email}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="sm">
+                                                <MoreHorizontalIcon className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            {/* Actions from the original table actions */}
+                                            {row.getVisibleCells()
+                                                .find(cell => cell.column.id === 'actions')
+                                                ?.column.columnDef.cell && 
+                                                flexRender(
+                                                    row.getVisibleCells()
+                                                        .find(cell => cell.column.id === 'actions')
+                                                        ?.column.columnDef.cell!,
+                                                    row.getVisibleCells()
+                                                        .find(cell => cell.column.id === 'actions')
+                                                        ?.getContext()!
+                                                )
+                                            }
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
+
+                                {/* User Details */}
+                                <div className="space-y-2">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground">Role</span>
+                                        <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                                            {user.role}
+                                        </Badge>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground">Status</span>
+                                        <Badge variant={user.active ? 'default' : 'destructive'}>
+                                            {user.active ? 'Active' : 'Inactive'}
+                                        </Badge>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-muted-foreground">Created</span>
+                                        <span className="text-sm">
+                                            {new Date(user.created_at).toLocaleDateString()}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div className="text-center py-8">
+                        <UserIcon className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
+                        <p className="text-muted-foreground">{t("noUsers")}</p>
+                    </div>
+                )}
+            </div>
+            {/* Enhanced Responsive Pagination */}
+            <div className="flex flex-col space-y-4 py-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+                <div className="flex items-center justify-center space-x-2 md:justify-start">
+                    <p className="text-sm font-medium hidden md:block">{tTable("rowsPerPage")}</p>
+                    <Select
+                        value={`${table.getState().pagination.pageSize}`}
+                        onValueChange={value => {
+                            table.setPageSize(Number(value));
+                        }}
+                    >
+                        <SelectTrigger className="h-8 w-[70px]">
+                            <SelectValue
+                                placeholder={
+                                    table.getState().pagination.pageSize
+                                }
+                            />
+                        </SelectTrigger>
+                        <SelectContent side="top">
+                            {[5, 10, 20, 30, 40, 50].map(pageSize => (
+                                <SelectItem
+                                    key={pageSize}
+                                    value={`${pageSize}`}
+                                >
+                                    {pageSize}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </div>
-                <div className="space-x-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        Previous
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next
-                    </Button>
+                
+                <div className="flex items-center justify-center space-x-4 md:space-x-6 lg:space-x-8">
+                    <div className="flex items-center justify-center text-sm font-medium">
+                        <span className="hidden md:inline">{tTable("page")}&nbsp;</span>
+                        <span>{table.getState().pagination.pageIndex + 1}</span>
+                        <span className="hidden md:inline">&nbsp;{tTable("of")}&nbsp;{table.getPageCount()}</span>
+                        <span className="md:hidden">&nbsp;/&nbsp;{table.getPageCount()}</span>
+                    </div>
+                    <div className="flex items-center space-x-1 md:space-x-2">
+                        <Button
+                            variant="outline"
+                            className="hidden h-8 w-8 p-0 lg:flex"
+                            onClick={() => table.setPageIndex(0)}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            {"<<"}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="h-8 w-8 p-0"
+                            onClick={() => table.previousPage()}
+                            disabled={!table.getCanPreviousPage()}
+                        >
+                            {"<"}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="h-8 w-8 p-0"
+                            onClick={() => table.nextPage()}
+                            disabled={!table.getCanNextPage()}
+                        >
+                            {">"}
+                        </Button>
+                        <Button
+                            variant="outline"
+                            className="hidden h-8 w-8 p-0 lg:flex"
+                            onClick={() =>
+                                table.setPageIndex(table.getPageCount() - 1)
+                            }
+                            disabled={!table.getCanNextPage()}
+                        >
+                            {">>"}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,32 +12,50 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { UserFormDialog } from "@/components/users/user-form-dialog";
-import { User, usersApi } from "@/lib/api";
+import { authApi, User, usersApi } from "@/lib/api";
+import { formatDate } from "@/lib/utils";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
 
 function ActionsCell({ user }: { user: User }) {
     const t = useTranslations("common");
+    const tUsers = useTranslations("users.table");
     const [showEditDialog, setShowEditDialog] = useState(false);
     const queryClient = useQueryClient();
+
+    // Get current user to check permissions
+    const { data: currentUserResponse } = useQuery({
+        queryKey: ["current-user"],
+        queryFn: authApi.me,
+    });
+    const currentUser = currentUserResponse?.data;
+    const isCurrentUserAdmin = currentUser?.role === "admin";
+    const canEditUser = isCurrentUserAdmin || user.slug === currentUser?.slug;
+    const canDeleteUser = isCurrentUserAdmin && user.slug !== currentUser?.slug;
 
     const deleteUserMutation = useMutation({
         mutationFn: (slug: string) => usersApi.deleteUser(slug),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["users"] });
-            toast.success("User deleted successfully");
+            toast.success(tUsers("userDeletedSuccess"));
         },
         onError: (error: any) => {
-            toast.error(error.response?.data?.message || "Failed to delete user");
+            toast.error(
+                error.response?.data?.message || tUsers("userDeleteFailed")
+            );
         },
     });
 
     const handleDelete = () => {
-        if (window.confirm("Are you sure you want to delete this user?")) {
+        if (!canDeleteUser) {
+            toast.error(tUsers("noDeletePermission"));
+            return;
+        }
+        if (window.confirm(tUsers("deleteUserConfirm"))) {
             deleteUserMutation.mutate(user.slug);
         }
     };
@@ -45,7 +64,7 @@ function ActionsCell({ user }: { user: User }) {
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
-                    <span className="sr-only">Open menu</span>
+                    <span className="sr-only">{tUsers("openMenu")}</span>
                     <MoreHorizontalIcon className="h-4 w-4" />
                 </Button>
             </DropdownMenuTrigger>
@@ -54,15 +73,22 @@ function ActionsCell({ user }: { user: User }) {
                 <DropdownMenuItem
                     onClick={() => navigator.clipboard.writeText(user.slug)}
                 >
-                    Copy user ID
+                    {tUsers("copyUserId")}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
-                    {t("edit")} user
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleDelete} className="text-red-600">
-                    {t("delete")} user
-                </DropdownMenuItem>
+                {canEditUser && (
+                    <DropdownMenuItem onClick={() => setShowEditDialog(true)}>
+                        {t("edit")} {tUsers("user")}
+                    </DropdownMenuItem>
+                )}
+                {canDeleteUser && (
+                    <DropdownMenuItem
+                        onClick={handleDelete}
+                        className="text-red-600"
+                    >
+                        {t("delete")} {tUsers("user")}
+                    </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
             <UserFormDialog
                 open={showEditDialog}
@@ -78,6 +104,7 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {
+            const tUsers = useTranslations("users.table");
             return (
                 <Button
                     variant="ghost"
@@ -86,18 +113,33 @@ export const columns: ColumnDef<User>[] = [
                     }
                     className="h-auto p-0 hover:bg-transparent"
                 >
-                    Name
+                    {tUsers("name")}
                     <ArrowUpDownIcon className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
-        cell: ({ row }) => (
-            <div className="font-medium">{row.getValue("name")}</div>
-        ),
+        cell: ({ row }) => {
+            const user = row.original;
+            return (
+                <div className="flex items-center space-x-3">
+                    <Avatar className="h-8 w-8">
+                        <AvatarImage 
+                            src={user.profile_photo ? `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://127.0.0.1:8001'}/storage/${user.profile_photo}` : undefined} 
+                            alt={user.name} 
+                        />
+                        <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-white text-xs font-semibold">
+                            {user.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                    </Avatar>
+                    <div className="font-medium">{user.name}</div>
+                </div>
+            );
+        },
     },
     {
         accessorKey: "email",
         header: ({ column }) => {
+            const tUsers = useTranslations("users.table");
             return (
                 <Button
                     variant="ghost"
@@ -106,7 +148,7 @@ export const columns: ColumnDef<User>[] = [
                     }
                     className="h-auto p-0 hover:bg-transparent"
                 >
-                    Email
+                    {tUsers("email")}
                     <ArrowUpDownIcon className="ml-2 h-4 w-4" />
                 </Button>
             );
@@ -117,24 +159,32 @@ export const columns: ColumnDef<User>[] = [
     },
     {
         accessorKey: "role",
-        header: "Role",
+        header: () => {
+            const tUsers = useTranslations("users.table");
+            return tUsers("role");
+        },
         cell: ({ row }) => {
+            const tUsers = useTranslations("users.table");
             const role = row.getValue("role") as string;
             return (
                 <Badge variant={role === "admin" ? "default" : "secondary"}>
-                    {role}
+                    {tUsers(role)}
                 </Badge>
             );
         },
     },
     {
         accessorKey: "active",
-        header: "Status",
+        header: () => {
+            const tUsers = useTranslations("users.table");
+            return tUsers("status");
+        },
         cell: ({ row }) => {
+            const tUsers = useTranslations("users.table");
             const isActive = row.getValue("active") as boolean;
             return (
                 <Badge variant={isActive ? "success" : "destructive"}>
-                    {isActive ? "Active" : "Inactive"}
+                    {isActive ? tUsers("active") : tUsers("inactive")}
                 </Badge>
             );
         },
@@ -142,6 +192,7 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "created_at",
         header: ({ column }) => {
+            const tUsers = useTranslations("users.table");
             return (
                 <Button
                     variant="ghost"
@@ -150,14 +201,15 @@ export const columns: ColumnDef<User>[] = [
                     }
                     className="h-auto p-0 hover:bg-transparent"
                 >
-                    Created
+                    {tUsers("created")}
                     <ArrowUpDownIcon className="ml-2 h-4 w-4" />
                 </Button>
             );
         },
         cell: ({ row }) => {
             const date = new Date(row.getValue("created_at"));
-            return <div>{date.toLocaleDateString()}</div>;
+            const locale = useLocale();
+            return <div>{formatDate(date.toLocaleDateString(), locale)}</div>;
         },
     },
     {
@@ -166,3 +218,27 @@ export const columns: ColumnDef<User>[] = [
         cell: ({ row }) => <ActionsCell user={row.original} />,
     },
 ];
+
+// --- Translations used in this file ---
+// Add these to your translation files (e.g. messages/en.json, messages/fr.json) under the "users" namespace:
+
+/*
+"users": {
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "created": "Created",
+    "user": "user",
+    "copyUserId": "Copy user ID",
+    "userDeletedSuccess": "User deleted successfully",
+    "userDeleteFailed": "Failed to delete user",
+    "noDeletePermission": "You don't have permission to delete this user",
+    "deleteUserConfirm": "Are you sure you want to delete this user?",
+    "openMenu": "Open menu",
+    "admin": "Admin",
+    "user": "User"
+}
+*/
