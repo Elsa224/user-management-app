@@ -1,9 +1,10 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/ui/loading-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LanguageSwitch } from "@/components/ui/language-switch";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { useAuth } from "@/lib/providers";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -11,6 +12,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -43,9 +45,12 @@ export default function LoginPage() {
 
         try {
             await login(data.email, data.password);
+            toast.success(t("loginSuccess"));
             router.push("/dashboard");
         } catch (err: any) {
-            setError(err.response?.data?.message || t("invalidCredentials"));
+            const errorMessage = err.response?.data?.message || t("invalidCredentials");
+            setError(errorMessage);
+            toast.error(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -59,24 +64,23 @@ export default function LoginPage() {
                 <div className="relative z-10 flex h-full flex-col justify-center p-8 text-white">
                     <div className="space-y-6">
                         <h1 className="text-4xl font-bold">
-                            User Management System
+                            {t("systemTitle")}
                         </h1>
                         <p className="text-xl text-amber-100">
-                            Streamline your user administration with our
-                            comprehensive dashboard
+                            {t("systemDescription")}
                         </p>
                         <div className="space-y-4">
                             <div className="flex items-center space-x-3">
                                 <div className="h-2 w-2 rounded-full bg-white" />
-                                <span>Secure authentication</span>
+                                <span>{t("features.secureAuth")}</span>
                             </div>
                             <div className="flex items-center space-x-3">
                                 <div className="h-2 w-2 rounded-full bg-white" />
-                                <span>Role-based access control</span>
+                                <span>{t("features.roleBasedAccess")}</span>
                             </div>
                             <div className="flex items-center space-x-3">
                                 <div className="h-2 w-2 rounded-full bg-white" />
-                                <span>Real-time user management</span>
+                                <span>{t("features.realtimeManagement")}</span>
                             </div>
                         </div>
                     </div>
@@ -86,8 +90,9 @@ export default function LoginPage() {
             {/* Right side - Login Form */}
             <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
                 <div className="sm:mx-auto sm:w-full sm:max-w-md">
-                    <div className="mb-8 flex justify-end">
+                    <div className="mb-8 flex justify-end space-x-2">
                         <LanguageSwitch />
+                        <ThemeToggle />
                     </div>
 
                     <h2 className="text-foreground text-center text-3xl font-bold tracking-tight">
@@ -182,20 +187,20 @@ export default function LoginPage() {
                             </div>
 
                             <div>
-                                <Button
+                                <LoadingButton
                                     type="submit"
                                     className="w-full"
-                                    disabled={isLoading}
+                                    loading={isLoading}
+                                    loadingText={t("loading")}
                                 >
-                                    {isLoading ? t("loading") : t("signIn")}
-                                </Button>
+                                    {t("signIn")}
+                                </LoadingButton>
                             </div>
                         </form>
 
                         <div className="mt-6">
                             <div className="text-muted-foreground text-center text-sm">
-                                Demo credentials: admin@example.com /
-                                password123
+                                {t("demoCredentials")}
                             </div>
                         </div>
                     </div>

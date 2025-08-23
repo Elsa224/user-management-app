@@ -12,7 +12,8 @@ import {
 import { columns } from "@/components/users/columns";
 import { DataTable } from "@/components/users/data-table";
 import { UserFormDialog } from "@/components/users/user-form-dialog";
-import { usersApi } from "@/lib/api";
+import { UserTableSkeleton } from "@/components/users/user-table-skeleton";
+import { usersApi, authApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { PlusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -27,42 +28,55 @@ export default function UsersPage() {
         queryFn: () => usersApi.getUsers({ per_page: 50 }),
     });
 
+    // Get current user to check permissions
+    const { data: currentUserResponse } = useQuery({
+        queryKey: ["current-user"],
+        queryFn: authApi.me,
+    });
+    const currentUser = currentUserResponse?.data;
+    const isCurrentUserAdmin = currentUser?.role === "admin";
+
     const users = usersResponse?.data?.data || [];
 
     return (
         <DashboardLayout>
-            <div className="space-y-6">
+            <div className="flex-1 space-y-4">
                 {/* Header */}
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between space-y-2">
                     <div>
-                        <h1 className="text-3xl font-bold tracking-tight">
-                            {t("title")}
-                        </h1>
+                        <h2 className="text-3xl font-bold tracking-tight">{t("title")}</h2>
                         <p className="text-muted-foreground">{t("subtitle")}</p>
                     </div>
-                    <Button onClick={() => setShowAddDialog(true)}>
-                        <PlusIcon className="mr-2 h-4 w-4" />
-                        {t("addUser")}
-                    </Button>
+                    {isCurrentUserAdmin && (
+                        <Button onClick={() => setShowAddDialog(true)}>
+                            <PlusIcon className="mr-2 h-4 w-4" />
+                            {t("addUser")}
+                        </Button>
+                    )}
                 </div>
 
                 {/* Users Table */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>All Users</CardTitle>
-                        <CardDescription>
-                            Manage and view all users in your system. You can
-                            search, sort, and perform actions on user accounts.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <DataTable
-                            columns={columns}
-                            data={users}
-                            loading={isLoading}
-                        />
-                    </CardContent>
-                </Card>
+                <div className="grid gap-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>{t("allUsers")}</CardTitle>
+                            <CardDescription>
+                                {t("manageUsersDescription")}
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {isLoading ? (
+                                <UserTableSkeleton />
+                            ) : (
+                                <DataTable
+                                    columns={columns}
+                                    data={users}
+                                    loading={isLoading}
+                                />
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
 
                 {/* Add User Dialog */}
                 <UserFormDialog

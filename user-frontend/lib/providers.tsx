@@ -8,6 +8,7 @@ import {
     useEffect,
     useState,
 } from "react";
+import { toast } from "sonner";
 import { User, authApi, tokenManager } from "./api";
 
 // Create Query Client
@@ -53,11 +54,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logout = async () => {
         try {
             await authApi.logout();
+            toast.success("Logged out successfully");
         } catch (error) {
             console.error("Logout error:", error);
         } finally {
             tokenManager.remove();
             setUser(null);
+            
+            // Add a 2-second delay before redirecting to login
+            setTimeout(() => {
+                window.location.href = "/login";
+            }, 2000);
         }
     };
 
