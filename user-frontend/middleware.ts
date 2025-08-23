@@ -18,9 +18,6 @@ export function middleware(request: NextRequest) {
         pathname.startsWith(route)
     );
 
-    // Check if the current path is a public route
-    const isPublicRoute = publicRoutes.includes(pathname);
-
     // If trying to access protected route without token, redirect to login
     if (isProtectedRoute && !token) {
         const loginUrl = new URL("/login", request.url);
