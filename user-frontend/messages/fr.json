@@ -45,7 +45,7 @@
             "roleBasedAccess": "Contrôle d'accès basé sur les rôles",
             "realtimeManagement": "Gestion des utilisateurs en temps réel"
         },
-        "demoCredentials": "Identifiants de démonstration : admin@example.com / password"
+        "demoCredentials": "Identifiants de démo : ('admin' ou 'user')@example.com / password"
     },
     "dashboard": {
         "title": "Tableau de bord",
