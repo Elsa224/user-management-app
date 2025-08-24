@@ -352,6 +352,8 @@ CREATE TABLE activity_logs (
     APP_ENV=production
     APP_DEBUG=false
     APP_URL=https://your-app.railway.app
+    JWT_SECRET=your-secure-jwt-secret
+    FRONTEND_URL=https://your-frontend-app.vercel.app
     ```
 
 2. **Database Migration**
@@ -361,12 +363,76 @@ CREATE TABLE activity_logs (
     php artisan db:seed --force
     ```
 
-3. **Optimization**
+3. **Storage Link Setup**
+
+    ```bash
+    php artisan storage:link --force
+    # If symlink is broken, fix manually:
+    rm -f public/storage && ln -sf ../storage/app/public public/storage
+    ```
+
+4. **Optimization**
     ```bash
     php artisan config:cache
     php artisan route:cache
     php artisan view:cache
     ```
+
+### 🚨 Railway Image Serving Fix
+
+**Issue**: Railway doesn't handle Laravel's symbolic links properly, causing 404 errors for uploaded images.
+
+**Solution Implemented**: Custom route in `routes/web.php`:
+
+```php
+// Serve storage files for Railway deployment
+Route::get('/storage/{path}', function ($path) {
+    // Security: Prevent path traversal attacks
+    $path = str_replace(['../', '..\\', '../\\'], '', $path);
+    $fullPath = storage_path('app/public/' . $path);
+    
+    // Check if file exists and is within allowed directory
+    if (!file_exists($fullPath) || !str_starts_with(realpath($fullPath), realpath(storage_path('app/public')))) {
+        abort(404);
+    }
+    
+    // Check if it's actually a file
+    if (!is_file($fullPath)) {
+        abort(404);
+    }
+    
+    $file = file_get_contents($fullPath);
+    $type = mime_content_type($fullPath);
+    
+    return Response::make($file, 200, [
+        'Content-Type' => $type,
+        'Content-Length' => strlen($file),
+        'Cache-Control' => 'public, max-age=31536000',
+        'Access-Control-Allow-Origin' => env('FRONTEND_URL', '*'),
+        'Access-Control-Allow-Methods' => 'GET',
+        'Access-Control-Allow-Headers' => 'Origin, Content-Type, X-Auth-Token',
+    ]);
+})->where('path', '[a-zA-Z0-9/_.-]+');
+```
+
+**Manual Symlink Fix** (Railway Console):
+```bash
+# Remove broken symlink
+rm -f public/storage
+
+# Create correct symlink manually  
+ln -sf ../storage/app/public public/storage
+
+# Verify it's correct (should show: public/storage -> ../storage/app/public)
+ls -la public/storage
+```
+
+**Security Features**:
+- Path traversal protection
+- Directory validation 
+- Proper CORS headers
+- Restrictive route pattern matching
+- File type validation
 
 ## 🔍 Troubleshooting
 
