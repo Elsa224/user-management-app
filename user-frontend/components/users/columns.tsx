@@ -14,6 +14,7 @@ import {
 import { UserFormDialog } from "@/components/users/user-form-dialog";
 import { authApi, User, usersApi } from "@/lib/api";
 import { formatDate } from "@/lib/utils";
+import { getImageUrl } from "@/lib/image-utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
@@ -125,11 +126,7 @@ export const columns: ColumnDef<User>[] = [
                 <div className="flex items-center space-x-3">
                     <Avatar className="h-8 w-8">
                         <AvatarImage
-                            src={
-                                user.profile_photo
-                                    ? `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://127.0.0.1:8001"}/storage/${user.profile_photo}`
-                                    : undefined
-                            }
+                            src={getImageUrl(user.profile_photo)}
                             alt={user.name}
                         />
                         <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-xs font-semibold text-white">

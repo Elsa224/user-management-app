@@ -43,6 +43,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { User } from "@/lib/api";
+import { getImageUrl } from "@/lib/image-utils";
 import {
     ChevronDownIcon,
     MailIcon,
@@ -342,11 +343,7 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                     <div className="flex items-center space-x-3">
                                         <Avatar className="h-10 w-10">
                                             <AvatarImage
-                                                src={
-                                                    user.profile_photo
-                                                        ? `${process.env.NEXT_PUBLIC_API_URL?.replace("/api", "") || "http://127.0.0.1:8001"}/storage/${user.profile_photo}`
-                                                        : undefined
-                                                }
+                                                src={getImageUrl(user.profile_photo)}
                                                 alt={user.name}
                                             />
                                             <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-sm font-semibold text-white">
