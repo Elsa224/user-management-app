@@ -149,13 +149,13 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     {/* Profile Photo Card */}
                     <div className="lg:col-span-1">
-                        <div className="bg-card text-card-foreground rounded-lg border p-6">
+                        <div className="bg-card text-card-foreground rounded-lg border p-4 sm:p-6">
                             <div className="space-y-4">
                                 <div>
-                                    <h3 className="text-lg font-semibold">
+                                    <h3 className="text-base font-semibold sm:text-lg">
                                         {t("profilePhoto")}
                                     </h3>
-                                    <p className="text-muted-foreground text-sm">
+                                    <p className="text-muted-foreground text-xs sm:text-sm">
                                         {t("changePhoto")}
                                     </p>
                                 </div>
@@ -170,13 +170,13 @@ export default function ProfilePage() {
                     {/* Profile Information */}
                     <div className="space-y-6 lg:col-span-2">
                         {/* Personal Information Card */}
-                        <div className="bg-card text-card-foreground rounded-lg border p-6">
-                            <div className="space-y-6">
+                        <div className="bg-card text-card-foreground rounded-lg border p-4 sm:p-6">
+                            <div className="space-y-4 sm:space-y-6">
                                 <div>
-                                    <h3 className="text-lg font-semibold">
+                                    <h3 className="text-base font-semibold sm:text-lg">
                                         {t("personalInfo")}
                                     </h3>
-                                    <p className="text-muted-foreground text-sm">
+                                    <p className="text-muted-foreground text-xs sm:text-sm">
                                         {t("updatePersonalDetails")}
                                     </p>
                                 </div>
@@ -269,8 +269,9 @@ export default function ProfilePage() {
                                             type="submit"
                                             loading={isUpdatingProfile}
                                             loadingText={commonT("updating")}
+                                            className="w-full sm:w-auto"
                                         >
-                                            {t("updateProfile")}
+                                            <span className="truncate">{t("updateProfile")}</span>
                                         </LoadingButton>
                                     </div>
                                 </form>
@@ -278,13 +279,13 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Account Security Card */}
-                        <div className="bg-card text-card-foreground rounded-lg border p-6">
-                            <div className="space-y-6">
+                        <div className="bg-card text-card-foreground rounded-lg border p-4 sm:p-6">
+                            <div className="space-y-4 sm:space-y-6">
                                 <div>
-                                    <h3 className="text-lg font-semibold">
+                                    <h3 className="text-base font-semibold sm:text-lg">
                                         {t("accountSecurity")}
                                     </h3>
-                                    <p className="text-muted-foreground text-sm">
+                                    <p className="text-muted-foreground text-xs sm:text-sm">
                                         {t("updatePasswordDescription")}
                                     </p>
                                 </div>
@@ -382,8 +383,9 @@ export default function ProfilePage() {
                                             type="submit"
                                             loading={isChangingPassword}
                                             loadingText={commonT("updating")}
+                                            className="w-full sm:w-auto"
                                         >
-                                            {t("changePassword")}
+                                            <span className="truncate">{t("changePassword")}</span>
                                         </LoadingButton>
                                     </div>
                                 </form>

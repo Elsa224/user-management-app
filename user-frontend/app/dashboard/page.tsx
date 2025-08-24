@@ -183,6 +183,8 @@ export default function DashboardPage() {
                                         <DataTable
                                             columns={columns.slice(0, 4)} // Show fewer columns in dashboard
                                             data={recentUsers}
+                                            pagination={false}
+                                            showViewColumns={false}
                                             loading={isLoading}
                                         />
                                     </CardContent>

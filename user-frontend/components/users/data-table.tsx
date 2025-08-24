@@ -12,7 +12,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import * as React from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -46,20 +46,27 @@ import { User } from "@/lib/api";
 import { getImageUrl } from "@/lib/image-utils";
 import {
     ChevronDownIcon,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
     MailIcon,
     MoreHorizontalIcon,
     SearchIcon,
     SlidersHorizontalIcon,
     UserIcon,
 } from "lucide-react";
+import { formatDate } from "@/lib/utils";
 
 interface DataTableProps {
     columns: ColumnDef<User>[];
     data: User[];
     loading?: boolean;
+    pagination?: boolean;
+    showViewColumns?: boolean;
 }
 
-export function DataTable({ columns, data, loading }: DataTableProps) {
+export function DataTable({ columns, data, loading, pagination = true, showViewColumns = true }: DataTableProps) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
@@ -67,7 +74,8 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
         React.useState<VisibilityState>({});
     const [rowSelection, setRowSelection] = React.useState({});
     const t = useTranslations("users");
-    const tTable = useTranslations("table");
+    const tTable = useTranslations("users.table");
+    const locale = useLocale();
 
     const table = useReactTable({
         data,
@@ -140,32 +148,39 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">
-                                        All roles
+                                        {tTable("allRoles", { default: "All roles" })}
                                     </SelectItem>
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                    <SelectItem value="user">User</SelectItem>
+                                    <SelectItem value="admin">
+                                        {tTable("admin", { default: "Admin" })}
+                                    </SelectItem>
+                                    <SelectItem value="user">
+                                        {tTable("user", { default: "User" })}
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
 
                             {/* Status Filter */}
                             <Select
-                                value={
-                                    (table
+                                value={(() => {
+                                    const filterValue = table
                                         .getColumn("active")
-                                        ?.getFilterValue() as string) ?? ""
-                                }
+                                        ?.getFilterValue();
+                                    if (filterValue === true) return "active";
+                                    if (filterValue === false) return "inactive";
+                                    return "all";
+                                })()}
                                 onValueChange={value => {
-                                    const filterValue =
-                                        value === "all"
-                                            ? undefined
-                                            : value === "active"
-                                              ? true
-                                              : value === "inactive"
-                                                ? false
-                                                : undefined;
                                     table
                                         .getColumn("active")
-                                        ?.setFilterValue(filterValue);
+                                        ?.setFilterValue(
+                                            value === "all"
+                                                ? undefined
+                                                : value === "active"
+                                                    ? true
+                                                    : value === "inactive"
+                                                        ? false
+                                                        : undefined
+                                        );
                                 }}
                             >
                                 <SelectTrigger className="w-full md:w-[180px]">
@@ -175,15 +190,15 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                         })}
                                     />
                                 </SelectTrigger>
-                                <SelectContent>
+                                <SelectContent className="text-dark">
                                     <SelectItem value="all">
-                                        All status
+                                        {tTable("allStatus", { default: "All status" })}
                                     </SelectItem>
                                     <SelectItem value="active">
-                                        Active
+                                        {tTable("active", { default: "Active" })}
                                     </SelectItem>
                                     <SelectItem value="inactive">
-                                        Inactive
+                                        {tTable("inactive", { default: "Inactive" })}
                                     </SelectItem>
                                 </SelectContent>
                             </Select>
@@ -193,15 +208,17 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                 <Button
                                     variant="ghost"
                                     onClick={() => table.resetColumnFilters()}
-                                    className="h-8 w-full px-2 md:w-auto lg:px-3"
+                                    className="h-8 w-full px-2 md:w-auto lg:px-3 border"
                                 >
-                                    Reset
+                                    {t("clearFilters")}
                                 </Button>
                             )}
                         </div>
                     </div>
 
                     {/* Column Visibility Toggle */}
+                    {
+                        showViewColumns &&
                     <div className="flex justify-end">
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -251,6 +268,7 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+                    }
                 </div>
             </div>
 
@@ -405,7 +423,7 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                 <div className="space-y-2">
                                     <div className="flex items-center justify-between">
                                         <span className="text-muted-foreground text-sm">
-                                            Role
+                                            {tTable("role")}
                                         </span>
                                         <Badge
                                             variant={
@@ -414,33 +432,33 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                                     : "secondary"
                                             }
                                         >
-                                            {user.role}
+                                            {tTable(user.role)}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span className="text-muted-foreground text-sm">
-                                            Status
+                                            {tTable("status")}
                                         </span>
                                         <Badge
                                             variant={
                                                 user.active
-                                                    ? "default"
+                                                    ? "success"
                                                     : "destructive"
                                             }
                                         >
                                             {user.active
-                                                ? "Active"
-                                                : "Inactive"}
+                                                ? tTable("active")
+                                                : tTable("inactive")}
                                         </Badge>
                                     </div>
                                     <div className="flex items-center justify-between">
                                         <span className="text-muted-foreground text-sm">
-                                            Created
+                                            {tTable("created")}
                                         </span>
                                         <span className="text-sm">
-                                            {new Date(
+                                            { formatDate(new Date(
                                                 user.created_at
-                                            ).toLocaleDateString()}
+                                            ).toLocaleDateString(), locale)}
                                         </span>
                                     </div>
                                 </div>
@@ -455,6 +473,8 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                 )}
             </div>
             {/* Enhanced Responsive Pagination */}
+            {
+                pagination &&
             <div className="flex flex-col space-y-4 py-4 md:flex-row md:items-center md:justify-between md:space-y-0">
                 <div className="flex items-center justify-center space-x-2 md:justify-start">
                     <p className="hidden text-sm font-medium md:block">
@@ -505,24 +525,27 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                             className="hidden h-8 w-8 p-0 lg:flex"
                             onClick={() => table.setPageIndex(0)}
                             disabled={!table.getCanPreviousPage()}
+                            aria-label={tTable("goToFirstPage")}
                         >
-                            {"<<"}
+                            <ChevronsLeft className="h-4 w-4" />
                         </Button>
                         <Button
                             variant="outline"
                             className="h-8 w-8 p-0"
                             onClick={() => table.previousPage()}
                             disabled={!table.getCanPreviousPage()}
+                            aria-label={tTable("goToPreviousPage")}
                         >
-                            {"<"}
+                            <ChevronLeft className="h-4 w-4" />
                         </Button>
                         <Button
                             variant="outline"
                             className="h-8 w-8 p-0"
                             onClick={() => table.nextPage()}
                             disabled={!table.getCanNextPage()}
+                            aria-label={tTable("goToNextPage")}
                         >
-                            {">"}
+                            <ChevronRight className="h-4 w-4" />
                         </Button>
                         <Button
                             variant="outline"
@@ -531,12 +554,14 @@ export function DataTable({ columns, data, loading }: DataTableProps) {
                                 table.setPageIndex(table.getPageCount() - 1)
                             }
                             disabled={!table.getCanNextPage()}
+                            aria-label={tTable("goToLastPage")}
                         >
-                            {">>"}
+                            <ChevronsRight className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </div>
+            }
         </div>
     );
 }

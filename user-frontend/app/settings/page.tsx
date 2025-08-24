@@ -10,9 +10,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { activityLogsApi } from "@/lib/api";
+import { activityLogsApi, usersApi } from "@/lib/api";
 import { useAuth } from "@/lib/providers";
-import { cn } from "@/lib/utils";
+import { cn, formatDateAndTime } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
     ActivityIcon,
@@ -34,8 +34,8 @@ export default function SettingsPage() {
     const [filterAction, setFilterAction] = useState("");
     const [filterUser, setFilterUser] = useState("");
     const { user } = useAuth();
-    const t = useTranslations("settings");
     const commonT = useTranslations("common");
+    const t = useTranslations("settings");
     const router = useRouter();
 
     // Prepare query parameters
@@ -55,6 +55,20 @@ export default function SettingsPage() {
         }),
         [searchTerm, filterAction, filterUser]
     );
+
+    // Get all users for the filter dropdown
+    const {
+        data: usersResponse,
+        isLoading: isLoadingUsers,
+        error: usersError,
+    } = useQuery({
+        queryKey: ["all-users"],
+        queryFn: () => usersApi.getUsers({ per_page: 100 }), // Get more users for filter
+        enabled: user?.role === "admin",
+        staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    });
+
+    const allUsers = usersResponse?.data?.data || [];
 
     // Get activity logs using React Query
     const {
@@ -82,16 +96,16 @@ export default function SettingsPage() {
             // For now, let's create a simple CSV export from the current data
             const csvContent = [
                 ["User", "Action", "Resource", "Timestamp", "IP Address"].join(
-                    ","
+                    ";"
                 ),
                 ...activityLogs.map(log =>
                     [
                         log.user.name,
                         log.action,
                         `${log.target_type || "N/A"} (${log.target_slug || "N/A"})`,
-                        formatTimestamp(log.created_at),
+                        formatDateAndTime(formatTimestamp(log.created_at)),
                         log.ip_address || "N/A",
-                    ].join(",")
+                    ].join(";")
                 ),
             ].join("\n");
 
@@ -194,97 +208,169 @@ export default function SettingsPage() {
                 {/* Activity Logs Section */}
                 <div className="bg-card text-card-foreground rounded-lg border">
                     <div className="border-b p-6">
-                        <div className="mb-4 flex items-center justify-between">
+                        <div className="mb-4 space-y-4 sm:flex sm:items-center sm:justify-between sm:space-y-0">
                             <div>
                                 <h3 className="text-lg font-semibold">
                                     {t("allActivityLogs")}
+                                    {(filterAction && filterAction !== "all") ||
+                                    (filterUser && filterUser !== "all") ? (
+                                        <span className="text-muted-foreground ml-2 text-sm font-normal">
+                                            (Filtered)
+                                        </span>
+                                    ) : null}
                                 </h3>
                                 <p className="text-muted-foreground text-sm">
                                     {t("activityLogsDescription")}
+                                    {filterUser && filterUser !== "all" && (
+                                        <span className="ml-1">
+                                            - Showing logs for:{" "}
+                                            {
+                                                allUsers.find(
+                                                    u =>
+                                                        u.id.toString() ===
+                                                        filterUser
+                                                )?.name
+                                            }
+                                        </span>
+                                    )}
                                 </p>
                             </div>
-                            <div className="flex space-x-2">
+                            <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={() => refetchActivityLogs()}
+                                    className="w-full sm:w-auto"
                                 >
                                     <RefreshCwIcon className="mr-2 h-4 w-4" />
-                                    {t("refreshLogs")}
+                                    <span className="truncate">
+                                        {t("refreshLogs")}
+                                    </span>
                                 </Button>
                                 <Button
                                     variant="outline"
                                     size="sm"
                                     onClick={exportLogs}
+                                    className="w-full sm:w-auto"
                                 >
                                     <DownloadIcon className="mr-2 h-4 w-4" />
-                                    {t("exportLogs")}
+                                    <span className="truncate">
+                                        {t("exportLogs")}
+                                    </span>
                                 </Button>
                             </div>
                         </div>
 
                         {/* Responsive Filters */}
-                        <div className="flex flex-col gap-4 sm:flex-row">
-                            <div className="relative flex-1">
-                                <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                                <Input
-                                    placeholder="Search activity logs..."
-                                    value={searchTerm}
-                                    onChange={e =>
-                                        setSearchTerm(e.target.value)
-                                    }
-                                    className="pl-9"
-                                />
+                        <div className="space-y-4">
+                            <div className="flex flex-col gap-4 sm:flex-row">
+                                <div className="relative flex-1">
+                                    <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                                    <Input
+                                        placeholder={t("searchActivityLogs")}
+                                        value={searchTerm}
+                                        onChange={e =>
+                                            setSearchTerm(e.target.value)
+                                        }
+                                        className="pl-9"
+                                    />
+                                </div>
+                                <Select
+                                    value={filterAction}
+                                    onValueChange={setFilterAction}
+                                >
+                                    <SelectTrigger className="w-full sm:w-[180px]">
+                                        <SelectValue
+                                            placeholder={t("filterByAction")}
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            {t("allActions")}
+                                        </SelectItem>
+                                        <SelectItem value="created_user">
+                                            {t("createdUser")}
+                                        </SelectItem>
+                                        <SelectItem value="updated_user">
+                                            {t("updatedUser")}
+                                        </SelectItem>
+                                        <SelectItem value="deleted_user">
+                                            {t("deletedUser")}
+                                        </SelectItem>
+                                        <SelectItem value="user_login">
+                                            {t("userLogin")}
+                                        </SelectItem>
+                                        <SelectItem value="user_logout">
+                                            {t("userLogout")}
+                                        </SelectItem>
+                                        <SelectItem value="updated_profile_photo">
+                                            {t("updatedProfilePhoto")}
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <Select
+                                    value={filterUser}
+                                    onValueChange={setFilterUser}
+                                    disabled={isLoadingUsers}
+                                >
+                                    <SelectTrigger className="w-full sm:w-[180px]">
+                                        <SelectValue
+                                            placeholder={
+                                                isLoadingUsers
+                                                    ? t("loadingUsers")
+                                                    : t("filterByUser")
+                                            }
+                                        />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="all">
+                                            {t("allUsers")}
+                                        </SelectItem>
+                                        {isLoadingUsers ? (
+                                            <SelectItem
+                                                value="loading"
+                                                disabled
+                                            >
+                                                {t("loadingUsers")}
+                                            </SelectItem>
+                                        ) : usersError ? (
+                                            <SelectItem value="error" disabled>
+                                                {t("errorLoadingUsers")}
+                                            </SelectItem>
+                                        ) : (
+                                            allUsers.map(userItem => (
+                                                <SelectItem
+                                                    key={userItem.id}
+                                                    value={userItem.id.toString()}
+                                                >
+                                                    {userItem.name} (
+                                                    {userItem.email})
+                                                </SelectItem>
+                                            ))
+                                        )}
+                                    </SelectContent>
+                                </Select>
                             </div>
-                            <Select
-                                value={filterAction}
-                                onValueChange={setFilterAction}
-                            >
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue
-                                        placeholder={t("filterByAction")}
-                                    />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">
-                                        All Actions
-                                    </SelectItem>
-                                    <SelectItem value="created_user">
-                                        Created User
-                                    </SelectItem>
-                                    <SelectItem value="updated_user">
-                                        Updated User
-                                    </SelectItem>
-                                    <SelectItem value="deleted_user">
-                                        Deleted User
-                                    </SelectItem>
-                                    <SelectItem value="user_login">
-                                        User Login
-                                    </SelectItem>
-                                    <SelectItem value="user_logout">
-                                        User Logout
-                                    </SelectItem>
-                                    <SelectItem value="updated_profile_photo">
-                                        Updated Profile Photo
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Select
-                                value={filterUser}
-                                onValueChange={setFilterUser}
-                            >
-                                <SelectTrigger className="w-[180px]">
-                                    <SelectValue
-                                        placeholder={t("filterByUser")}
-                                    />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="all">
-                                        All Users
-                                    </SelectItem>
-                                    {/* In a real app, you'd populate this from API */}
-                                </SelectContent>
-                            </Select>
+
+                            {/* Clear Filters Button */}
+                            {(searchTerm ||
+                                (filterAction && filterAction !== "all") ||
+                                (filterUser && filterUser !== "all")) && (
+                                <div className="flex justify-end">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => {
+                                            setSearchTerm("");
+                                            setFilterAction("");
+                                            setFilterUser("");
+                                        }}
+                                        className="text-xs"
+                                    >
+                                        {t("clearAllFilters")}
+                                    </Button>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -424,6 +510,7 @@ export default function SettingsPage() {
                                                                                         {
                                                                                             key
                                                                                         }
+
                                                                                         :{" "}
                                                                                         {typeof value ===
                                                                                         "object"
@@ -554,6 +641,7 @@ export default function SettingsPage() {
                                                                                     {
                                                                                         key
                                                                                     }
+
                                                                                     :
                                                                                 </span>{" "}
                                                                                 {typeof value ===

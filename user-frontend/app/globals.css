@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-    --primary: oklch(0.216 0.006 56.043); /* amber-400 */
+    --primary: oklch(0.77 0.16 70); /* amber-400 */
     --primary-foreground: oklch(0.985 0.001 106.423);
     --secondary: oklch(0.97 0.001 106.424);
     --secondary-foreground: oklch(0.216 0.006 56.043);
@@ -82,7 +82,7 @@
 .dark {
     --background: oklch(0.147 0.004 49.25);
     --foreground: oklch(0.985 0.001 106.423);
-    --primary: oklch(0.923 0.003 48.717); /* amber-400 */
+    --primary: oklch(0.67 0.16 58); /* amber-400 */
     --primary-foreground: oklch(0.216 0.006 56.043);
     --secondary: oklch(0.268 0.007 34.298);
     --secondary-foreground: oklch(0.985 0.001 106.423);
@@ -200,6 +200,45 @@ body {
 
 .animate-fade-in {
     animation: fadeIn 0.2s ease-out;
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+    /* Improve touch targets */
+    button {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Better text wrapping */
+    .truncate {
+        word-break: break-word;
+        overflow-wrap: break-word;
+    }
+    
+    /* Improve select dropdowns on mobile */
+    [data-radix-select-content] {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    
+    /* Better scrollable areas */
+    .overflow-x-auto {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Prevent horizontal scroll on small screens */
+body {
+    overflow-x: hidden;
+}
+
+/* Better focus states for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
 }
 
 @layer base {

@@ -91,8 +91,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                     priority
                                 />
                             </div>
-                            <span className="from-foreground to-foreground/80 hidden bg-gradient-to-r bg-clip-text text-lg font-bold sm:inline-block">
-                                {t("userManagement")}
+                            <span className="from-foreground to-foreground/80 hidden bg-gradient-to-r bg-clip-text text-base font-bold sm:inline-block sm:text-lg">
+                                <span className="hidden sm:inline">{t("userManagement")}</span>
+                                <span className="sm:hidden">UM</span>
                             </span>
                         </div>
 
@@ -127,21 +128,23 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                         </nav>
                     </div>
 
-                    <div className="flex flex-1 items-center justify-between space-x-4 md:justify-end">
+                    <div className="flex flex-1 items-center justify-end space-x-4 md:justify-end">
                         {/* Right side actions */}
                         <div className="flex items-center space-x-1">
-                            <LanguageSwitch />
-                            <ThemeToggle />
+                            <div className="hidden sm:flex sm:items-center sm:space-x-1">
+                                <LanguageSwitch />
+                                <ThemeToggle />
 
-                            {/* Notifications */}
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="hover:bg-accent/50 relative transition-colors"
-                            >
-                                <BellIcon className="h-4 w-4" />
-                                <span className="border-background absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 bg-amber-400" />
-                            </Button>
+                                {/* Notifications */}
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="hover:bg-accent/50 relative transition-colors"
+                                >
+                                    <BellIcon className="h-4 w-4" />
+                                    <span className="border-background absolute -top-1 -right-1 h-3 w-3 rounded-full border-2 bg-amber-400" />
+                                </Button>
+                            </div>
 
                             {/* User menu */}
                             <DropdownMenu>
@@ -165,38 +168,50 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                                     </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
-                                    className="w-64 p-2"
+                                    className="w-56 p-2 sm:w-64"
                                     align="end"
                                     forceMount
                                     sideOffset={8}
                                 >
-                                    <DropdownMenuLabel className="bg-muted/30 mb-2 rounded-lg p-3 font-normal">
-                                        <div className="flex items-center space-x-3">
-                                            <Avatar className="h-10 w-10">
+                                    <DropdownMenuLabel className="bg-muted/30 mb-2 rounded-lg p-2 font-normal sm:p-3">
+                                        <div className="flex items-center space-x-2 sm:space-x-3">
+                                            <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                                                 <AvatarImage
                                                     src={getImageUrl(user?.profile_photo)}
                                                     alt={user?.name}
                                                 />
-                                                <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-sm font-semibold text-white">
+                                                <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-xs font-semibold text-white sm:text-sm">
                                                     {user?.name
                                                         ?.charAt(0)
                                                         .toUpperCase()}
                                                 </AvatarFallback>
                                             </Avatar>
-                                            <div className="flex flex-col space-y-1">
-                                                <p className="text-sm leading-none font-medium">
+                                            <div className="flex min-w-0 flex-1 flex-col space-y-1">
+                                                <p className="truncate text-xs font-medium leading-none sm:text-sm">
                                                     {user?.name}
                                                 </p>
-                                                <p className="text-muted-foreground text-xs leading-none">
+                                                <p className="text-muted-foreground truncate text-xs leading-none">
                                                     {user?.email}
                                                 </p>
-                                                <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
+                                                <span className="inline-flex w-fit items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/20 dark:text-amber-400">
                                                     {user?.role}
                                                 </span>
                                             </div>
                                         </div>
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator className="my-2" />
+                                    
+                                    {/* Mobile-only theme and language controls */}
+                                    <div className="mb-2 sm:hidden">
+                                        <div className="flex items-center justify-between px-2 py-1">
+                                            <div className="flex items-center space-x-1">
+                                                <LanguageSwitch />
+                                                <ThemeToggle />
+                                            </div>
+                                        </div>
+                                        <DropdownMenuSeparator className="my-2" />
+                                    </div>
+                                    
                                     <DropdownMenuItem
                                         className="cursor-pointer rounded-md p-2"
                                         asChild
@@ -244,7 +259,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 {/* Sidebar */}
                 <aside
                     className={cn(
-                        "bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed top-14 left-0 z-40 h-[calc(100vh-3.5rem)] w-64 shrink-0 border-r backdrop-blur transition-transform md:sticky md:block",
+                        "bg-background/95 supports-[backdrop-filter]:bg-background/60 fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 shrink-0 border-r backdrop-blur transition-transform md:sticky md:block",
                         sidebarOpen
                             ? "translate-x-0"
                             : "-translate-x-full md:translate-x-0"

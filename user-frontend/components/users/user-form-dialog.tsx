@@ -388,31 +388,3 @@ export function UserFormDialog({
         </Dialog>
     );
 }
-
-// --- TRANSLATIONS TO ADD ---
-//
-// In your messages/en.json (or other locale files), add the following under the "users" namespace:
-//
-// "users": {
-//   ...
-//   "nameRequired": "Name is required",
-//   "invalidEmail": "Invalid email address",
-//   "passwordMin": "Password must be at least 6 characters",
-//   "userCreateSuccess": "User created successfully",
-//   "userCreateError": "Failed to create user",
-//   "userUpdateSuccess": "User updated successfully",
-//   "userUpdateError": "Failed to update user",
-//   "onlyAdminsCanCreate": "Only administrators can create new users",
-//   "editOwnProfileOnly": "You can only edit your own profile",
-//   "addUserDescription": "Create a new user account with the form below.",
-//   "editUserDescription": "Update user information using the form below.",
-//   "namePlaceholder": "Enter full name",
-//   "emailPlaceholder": "Enter email address",
-//   "passwordPlaceholder": "Enter password",
-//   "newPasswordPlaceholder": "Enter new password",
-//   "leaveEmptyToKeepCurrent": "(leave empty to keep current)",
-//   "rolePlaceholder": "Select a role",
-//   "activeStatusDescription": "User can log in and access the system"
-// }
-//
-// (Add these keys if they do not already exist.)

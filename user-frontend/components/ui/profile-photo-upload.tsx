@@ -105,15 +105,16 @@ export function ProfilePhotoUpload({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center space-x-6">
+            {/* Mobile-first responsive layout */}
+            <div className="flex flex-col items-center space-y-4 sm:flex-row sm:items-center sm:space-x-6 sm:space-y-0">
                 {/* Profile Photo Preview */}
-                <div className="relative">
-                    <Avatar className="ring-background h-24 w-24 shadow-lg ring-4">
+                <div className="relative flex-shrink-0">
+                    <Avatar className="ring-background h-20 w-20 shadow-lg ring-4 sm:h-24 sm:w-24">
                         <AvatarImage
                             src={profilePhotoUrl || undefined}
                             alt={user?.name || "Profile"}
                         />
-                        <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-2xl font-semibold text-white">
+                        <AvatarFallback className="bg-gradient-to-r from-amber-400 to-amber-500 text-xl font-semibold text-white sm:text-2xl">
                             {user?.name?.charAt(0).toUpperCase()}
                         </AvatarFallback>
                     </Avatar>
@@ -122,19 +123,19 @@ export function ProfilePhotoUpload({
                     <Button
                         size="icon"
                         variant="secondary"
-                        className="border-background absolute -right-2 -bottom-2 h-8 w-8 rounded-full border-2 shadow-lg"
+                        className="border-background absolute -right-2 -bottom-2 h-7 w-7 rounded-full border-2 shadow-lg sm:h-8 sm:w-8"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
                     >
-                        <CameraIcon className="h-4 w-4" />
+                        <CameraIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
                 </div>
 
                 {/* Upload Area */}
-                <div className="flex-1">
+                <div className="w-full flex-1">
                     <div
                         className={cn(
-                            "cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors",
+                            "cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors sm:p-6",
                             isDragging
                                 ? "border-amber-400 bg-amber-50 dark:bg-amber-900/10"
                                 : "border-muted-foreground/25 hover:bg-accent/50 hover:border-amber-400",
@@ -147,8 +148,8 @@ export function ProfilePhotoUpload({
                             !isUploading && fileInputRef.current?.click()
                         }
                     >
-                        <UploadIcon className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
-                        <p className="text-foreground mb-1 text-sm font-medium">
+                        <UploadIcon className="text-muted-foreground mx-auto mb-2 h-6 w-6 sm:h-8 sm:w-8" />
+                        <p className="text-foreground mb-1 text-xs font-medium sm:text-sm">
                             {t("dragDropPhoto")}
                         </p>
                         <p className="text-muted-foreground text-xs">
@@ -158,8 +159,8 @@ export function ProfilePhotoUpload({
                 </div>
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex space-x-3">
+            {/* Action Buttons - Mobile responsive */}
+            <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-3 sm:space-y-0">
                 <Button
                     variant="outline"
                     size="sm"
@@ -168,7 +169,9 @@ export function ProfilePhotoUpload({
                     className="flex-1"
                 >
                     <UploadIcon className="mr-2 h-4 w-4" />
-                    {profilePhotoUrl ? t("changePhoto") : t("uploadPhoto")}
+                    <span className="truncate">
+                        {profilePhotoUrl ? t("changePhoto") : t("uploadPhoto")}
+                    </span>
                 </Button>
 
                 {profilePhotoUrl && (
@@ -177,10 +180,10 @@ export function ProfilePhotoUpload({
                         size="sm"
                         onClick={deletePhoto}
                         disabled={isUploading}
-                        className="text-red-600 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/10"
+                        className="text-red-600 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/10 sm:flex-shrink-0"
                     >
                         <Trash2Icon className="mr-2 h-4 w-4" />
-                        {t("removePhoto")}
+                        <span className="truncate">{t("removePhoto")}</span>
                     </Button>
                 )}
             </div>

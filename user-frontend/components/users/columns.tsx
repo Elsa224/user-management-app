@@ -11,10 +11,11 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 import { UserFormDialog } from "@/components/users/user-form-dialog";
 import { authApi, User, usersApi } from "@/lib/api";
-import { formatDate } from "@/lib/utils";
 import { getImageUrl } from "@/lib/image-utils";
+import { formatDate } from "@/lib/utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
@@ -26,6 +27,7 @@ function ActionsCell({ user }: { user: User }) {
     const t = useTranslations("common");
     const tUsers = useTranslations("users.table");
     const [showEditDialog, setShowEditDialog] = useState(false);
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
     const queryClient = useQueryClient();
 
     // Get current user to check permissions
@@ -56,9 +58,12 @@ function ActionsCell({ user }: { user: User }) {
             toast.error(tUsers("noDeletePermission"));
             return;
         }
-        if (window.confirm(tUsers("deleteUserConfirm"))) {
-            deleteUserMutation.mutate(user.slug);
-        }
+        setShowDeleteDialog(true);
+    };
+
+    const confirmDelete = () => {
+        deleteUserMutation.mutate(user.slug);
+        setShowDeleteDialog(false);
     };
 
     return (
@@ -96,6 +101,17 @@ function ActionsCell({ user }: { user: User }) {
                 onOpenChange={setShowEditDialog}
                 mode="edit"
                 user={user}
+            />
+            <AlertDialog
+                open={showDeleteDialog}
+                onOpenChange={setShowDeleteDialog}
+                title={tUsers("deleteUserTitle")}
+                description={`${tUsers("deleteUserDescription")} "${user.name}"? This action cannot be undone and will permanently remove all user data.`}
+                confirmText={t("delete")}
+                cancelText={t("cancel")}
+                onConfirm={confirmDelete}
+                variant="destructive"
+                loading={deleteUserMutation.isPending}
             />
         </DropdownMenu>
     );
@@ -226,27 +242,3 @@ export const columns: ColumnDef<User>[] = [
         cell: ({ row }) => <ActionsCell user={row.original} />,
     },
 ];
-
-// --- Translations used in this file ---
-// Add these to your translation files (e.g. messages/en.json, messages/fr.json) under the "users" namespace:
-
-/*
-"users": {
-    "name": "Name",
-    "email": "Email",
-    "role": "Role",
-    "status": "Status",
-    "active": "Active",
-    "inactive": "Inactive",
-    "created": "Created",
-    "user": "user",
-    "copyUserId": "Copy user ID",
-    "userDeletedSuccess": "User deleted successfully",
-    "userDeleteFailed": "Failed to delete user",
-    "noDeletePermission": "You don't have permission to delete this user",
-    "deleteUserConfirm": "Are you sure you want to delete this user?",
-    "openMenu": "Open menu",
-    "admin": "Admin",
-    "user": "User"
-}
-*/
