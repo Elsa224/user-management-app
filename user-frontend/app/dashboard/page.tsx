@@ -262,25 +262,3 @@ export default function DashboardPage() {
         </DashboardLayout>
     );
 }
-
-// DashboardPage translations used:
-// (Add these to your messages file under the "dashboard" namespace)
-/*
-{
-    "title": "Dashboard",
-    "totalUsers": "Total Users",
-    "fromLastWeek": "from last week",
-    "activeUsers": "Active Users",
-    "inactiveUsersCount": "{count} inactive",
-    "adminUsers": "Admin Users",
-    "regularUsersCount": "{count} regular users",
-    "recentUsersCard": "Recent Users",
-    "last7Days": "Last 7 days",
-    "recentUsers": "Recent Users",
-    "recentUsersDescription": "The most recently registered users",
-    "overview": "Overview",
-    "registeredUsers": "registered users",
-    "ofTotal": "of total",
-    "systemAdministrators": "System administrators"
-}
-*/
