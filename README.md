@@ -175,13 +175,13 @@ user-management-app/
 ### Admin User
 
 -   **Email**: admin@example.com
--   **Password**: password123
+-   **Password**: password
 -   **Permissions**: Full access to all features
 
 ### Regular User
 
 -   **Email**: user@example.com
--   **Password**: password123
+-   **Password**: password
 -   **Permissions**: Limited access
 
 ## 📡 API Endpoints

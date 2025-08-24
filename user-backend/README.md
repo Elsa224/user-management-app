@@ -156,7 +156,7 @@ Content-Type: application/json
 
 {
   "email": "admin@example.com",
-  "password": "password123"
+  "password": "password"
 }
 ```
 
@@ -333,13 +333,13 @@ CREATE TABLE activity_logs (
 ### Admin User
 
 -   **Email**: admin@example.com
--   **Password**: password123
+-   **Password**: password
 -   **Permissions**: Full system access
 
 ### Regular User
 
 -   **Email**: user@example.com
--   **Password**: password123
+-   **Password**: password
 -   **Permissions**: Limited access
 
 ## 🚀 Production Deployment

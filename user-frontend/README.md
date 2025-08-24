@@ -122,8 +122,8 @@ The frontend integrates with the Laravel backend API:
 
 ### Demo Credentials
 
-- **Admin**: admin@example.com / password123
-- **User**: user@example.com / password123
+- **Admin**: admin@example.com / password
+- **User**: user@example.com / password
 
 ## Configuration
 

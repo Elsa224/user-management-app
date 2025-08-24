@@ -45,7 +45,7 @@
             "roleBasedAccess": "Role-based access control",
             "realtimeManagement": "Real-time user management"
         },
-        "demoCredentials": "Demo credentials : admin@example.com / password123"
+        "demoCredentials": "Demo credentials : admin@example.com / password"
     },
     "dashboard": {
         "title": "Dashboard",
