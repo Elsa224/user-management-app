@@ -14,6 +14,8 @@ return [
     // Origins that are allowed to access the API
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'), // Allow frontend URL from environment or default to localhost
+        'https://user-management-app-nv66.vercel.app',
+        'https://app-service-production-6c11.up.railway.app'
         // Add other allowed origins if needed, e.g. 'https://another-frontend.com'
     ],
 
