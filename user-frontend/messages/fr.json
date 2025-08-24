@@ -59,7 +59,12 @@
         "overview": "Aperçu",
         "registeredUsers": "utilisateurs inscrits",
         "ofTotal": "du total",
-        "systemAdministrators": "Administrateurs système"
+        "systemAdministrators": "Administrateurs système",
+        "fromLastWeek": "depuis la semaine dernière",
+        "inactiveUsersCount": "{count} inactif(s)",
+        "regularUsersCount": "{count} utilisateurs réguliers",
+        "recentUsersCard": "Utilisateurs récents",
+        "last7Days": "7 derniers jours"
     },
     "users": {
         "title": "Utilisateurs",
@@ -147,7 +152,7 @@
     },
     "table": {
         "rowsPerPage": "Lignes par page :",
-        "of": "de",
+        "of": "sur",
         "page": "Page",
         "goToFirstPage": "Aller à la première page",
         "goToPreviousPage": "Aller à la page précédente",

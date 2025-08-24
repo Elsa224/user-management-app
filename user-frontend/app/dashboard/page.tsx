@@ -85,7 +85,8 @@ export default function DashboardPage() {
                                             }
                                         >
                                             {Math.abs(stats.growth_rate || 0)}%
-                                            from last week
+                                            {` `}
+                                            {t("fromLastWeek")}
                                         </span>
                                     </div>
                                 </CardContent>
@@ -103,8 +104,7 @@ export default function DashboardPage() {
                                         {stats.active_users || 0}
                                     </div>
                                     <p className="text-muted-foreground text-xs">
-                                        {stats.inactive_users || 0} inactive
-                                        users
+                                        {t("inactiveUsersCount", { count: stats.inactive_users || 0 })}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -121,7 +121,7 @@ export default function DashboardPage() {
                                         {stats.admin_users || 0}
                                     </div>
                                     <p className="text-muted-foreground text-xs">
-                                        {stats.regular_users || 0} regular users
+                                        {t("regularUsersCount", { count: stats.regular_users || 0 })}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -129,7 +129,7 @@ export default function DashboardPage() {
                             <Card>
                                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                                     <CardTitle className="text-sm font-medium">
-                                        Recent Users
+                                        {t("recentUsersCard")}
                                     </CardTitle>
                                     <ActivityIcon className="text-muted-foreground h-4 w-4" />
                                 </CardHeader>
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                                         {stats.recent_users || 0}
                                     </div>
                                     <p className="text-muted-foreground text-xs">
-                                        Last 7 days
+                                        {t("last7Days")}
                                     </p>
                                 </CardContent>
                             </Card>
@@ -262,3 +262,25 @@ export default function DashboardPage() {
         </DashboardLayout>
     );
 }
+
+// DashboardPage translations used:
+// (Add these to your messages file under the "dashboard" namespace)
+/*
+{
+    "title": "Dashboard",
+    "totalUsers": "Total Users",
+    "fromLastWeek": "from last week",
+    "activeUsers": "Active Users",
+    "inactiveUsersCount": "{count} inactive",
+    "adminUsers": "Admin Users",
+    "regularUsersCount": "{count} regular users",
+    "recentUsersCard": "Recent Users",
+    "last7Days": "Last 7 days",
+    "recentUsers": "Recent Users",
+    "recentUsersDescription": "The most recently registered users",
+    "overview": "Overview",
+    "registeredUsers": "registered users",
+    "ofTotal": "of total",
+    "systemAdministrators": "System administrators"
+}
+*/

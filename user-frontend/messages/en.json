@@ -59,7 +59,12 @@
         "overview": "Overview",
         "registeredUsers": "registered users",
         "ofTotal": "of total",
-        "systemAdministrators": "System administrators"
+        "systemAdministrators": "System administrators",
+        "fromLastWeek": "from last week",
+        "inactiveUsersCount": "{count} inactive",
+        "regularUsersCount": "{count} regular users",
+        "recentUsersCard": "Recent Users",
+        "last7Days": "Last 7 days"
     },
     "users": {
         "title": "Users",
