@@ -104,6 +104,7 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {
+            //@ts-ignore
             const tUsers = useTranslations("users.table");
             return (
                 <Button
@@ -143,6 +144,7 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "email",
         header: ({ column }) => {
+            //@ts-ignore
             const tUsers = useTranslations("users.table");
             return (
                 <Button
@@ -164,10 +166,12 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "role",
         header: () => {
+            //@ts-ignore
             const tUsers = useTranslations("users.table");
             return tUsers("role");
         },
         cell: ({ row }) => {
+            //@ts-ignore
             const tUsers = useTranslations("users.table");
             const role = row.getValue("role") as string;
             return (
@@ -180,10 +184,12 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "active",
         header: () => {
+            //@ts-ignore
             const tUsers = useTranslations("users.table");
             return tUsers("status");
         },
         cell: ({ row }) => {
+            //@ts-ignore
             const tUsers = useTranslations("users.table");
             const isActive = row.getValue("active") as boolean;
             return (
@@ -196,6 +202,7 @@ export const columns: ColumnDef<User>[] = [
     {
         accessorKey: "created_at",
         header: ({ column }) => {
+            //@ts-ignore
             const tUsers = useTranslations("users.table");
             return (
                 <Button
