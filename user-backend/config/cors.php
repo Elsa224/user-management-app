@@ -12,7 +12,7 @@ return [
     'allowed_methods' => ['*'], // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
 
     // Origins that are allowed to access the API
-    'allowed_origins' => [
+    'allowed_origins' => env('APP_ENV') === 'production' ? ['*'] : [
         env('FRONTEND_URL', 'http://localhost:3000'), // Allow frontend URL from environment or default to localhost
         'https://user-management-app-nv66.vercel.app',
         'https://app-service-production-6c11.up.railway.app'
