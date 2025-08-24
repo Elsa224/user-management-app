@@ -9,6 +9,9 @@ set -e
 
 # Clear cache
 php artisan optimize:clear
+php artisan cache:clear                                                                                                                                                                                                                        ─╯
+php artisan config:clear
+php artisan route:clear
 
 # Cache the various components of the Laravel application
 php artisan config:cache
